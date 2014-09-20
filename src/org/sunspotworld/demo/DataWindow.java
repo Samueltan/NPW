@@ -26,6 +26,7 @@ package org.sunspotworld.demo;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import javax.swing.JFrame;
 
 import java.text.DateFormat;
@@ -43,7 +44,7 @@ public class DataWindow extends JFrame {
     private int index = 0;
     private long[] time = new long[MAX_SAMPLES];
     private double[] val = new double[MAX_SAMPLES];
-    DateFormat fmt = DateFormat.getDateTimeInstance();
+    DateFormat fmt = DateFormat.getTimeInstance();
     DecimalFormat df = new DecimalFormat(".00");
 
     /** Creates new form DataWindow */
@@ -60,7 +61,8 @@ public class DataWindow extends JFrame {
         time[index] = t;
         val[index++] = v;
         dataTextArea.append("Average temperature:  " + df.format(v) + " °„C at  " +fmt.format(new Date(t)) + " \n");
-        dataTextArea.setCaretPosition(dataTextArea.getText().length());
+        //System.out.println(t);
+        dataTextArea.setCaretPosition(dataTextArea.getText().length());       
         repaint();
     }
     

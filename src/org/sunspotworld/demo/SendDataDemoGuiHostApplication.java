@@ -47,13 +47,16 @@ public class SendDataDemoGuiHostApplication {
     // Broadcast port on which we listen for sensor samples
     private static final int HOST_PORT = 68;
     final double REAL1 = 23.1;
-    final double REAL2 = 0;
-    final double TEST1_S1 = 23.1;
-    final double TEST2_S1 = 0;
-    final double TEST1_S2 = 17.8;
-    final double TEST2_S2 = -5;
-    final double TEST1_S3 = 23.1;
-    final double TEST2_S3 = 0;
+    final double REAL2 = 2.9;
+    final double TEST1_S1 = 16.4;
+    final double TEST2_S1 = 4.3;
+    final double TEST1_S2 = 19.4;
+    final double TEST2_S2 = 8;
+    final double TEST1_S3 = 17.9;
+    final double TEST2_S3 = 7.8;
+    int sensor1 = 0;
+    int sensor2 = 0;
+    int sensor3 = 0;
     
     private JTextArea status;
     private long[] addresses = new long[8];
@@ -82,9 +85,15 @@ public class SendDataDemoGuiHostApplication {
     }
     
     private DataWindow findPlot(long addr,double val,long time) {
+        String ieee;
         for (int i = 0; i < addresses.length; i++) {
             if (addresses[i] == 0) {
-                String ieee = IEEEAddress.toDottedHex(addr);
+                if(addr==100){
+                ieee = "The All Sensors' Average Temputerature";  
+                }
+                else{
+                ieee = IEEEAddress.toDottedHex(addr);
+                }
                 status.append("The sensor's address is " + addr + " and the tempture is" + val + "\n");
                 addresses[i] = addr;
                 plots[i] = new DataWindow(ieee);
@@ -129,7 +138,7 @@ public class SendDataDemoGuiHostApplication {
              throw e;
         }
 
-        status.append("Listening...\n");
+        status.append("Listening...\n");        
 
         // Main data collection loop
         while (true) {
@@ -137,11 +146,25 @@ public class SendDataDemoGuiHostApplication {
                 // Read sensor sample received over the radio
                 rCon.receive(dg); 
                 String addr = dg.getAddress(); 
+                long addr1 = 100;
                 long time = dg.readLong();      // read time of the reading
                 double val = dg.readDouble();         // read the sensor value
-                DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);               
+                  
+                DataWindow dw1 = findPlot(addr1,val,time);  
                 this.Average(val, addr, time);
-                dw.addData(time, Average[3]);
+                if(addr.equals("0014.4F01.0000.7F6D")){
+                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+                    dw.addData(time, Average[0]);
+                }
+                if(addr.equals("0014.4F01.0000.3560")){
+                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+                    dw.addData(time, Average[1]);
+                }
+                if(addr.equals("0014.4F01.0000.465E")){
+                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+                    dw.addData(time, Average[2]);
+                }
+                dw1.addData(time, Average[3]);
                 
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
@@ -156,6 +179,8 @@ public class SendDataDemoGuiHostApplication {
             Calibra1= (real1-real2)/(test1-test2);
             Calibra2 = (test1*real2 - test2*real1)/(test1-test2);
             result = (Calibra1 * input) + Calibra2;
+            //System.out.println("a1="+Calibra1);
+            //System.out.println("a2="+Calibra2);
         }   
         else{
             result = input;
@@ -164,7 +189,6 @@ public class SendDataDemoGuiHostApplication {
     }
         
     public void Average(double val,String addr,long time){
-        int num = 0;
         if(addr.equals("0014.4F01.0000.7F6D")){
             a0[1]=a0[0];
             a0[2]=a0[1];
@@ -181,9 +205,9 @@ public class SendDataDemoGuiHostApplication {
             Average[0]=Calibration(Average[0],REAL1,REAL2,TEST1_S1,TEST2_S1);
             w1.Window0(Average[0], addr, time);
             state[0]=1;
-            num++;
+            sensor1 = 1;
         }  
-        if(addr.equals("0014.4F01.0000.359D")){
+        if(addr.equals("0014.4F01.0000.3560")){
             a1[1]=a1[0];
             a1[2]=a1[1];
             a1[0]=val;
@@ -199,7 +223,7 @@ public class SendDataDemoGuiHostApplication {
             Average[1]=Calibration(Average[1],REAL1,REAL2,TEST1_S2,TEST2_S2);
             w1.Window1(Average[1], addr, time);
             state[1]=1;            
-            num++;
+            sensor2 = 1;
         }  
         if(addr.equals("0014.4F01.0000.465E")){
             a2[1]=a2[0];
@@ -215,14 +239,14 @@ public class SendDataDemoGuiHostApplication {
                     Average[2]=val;
                 }
             }   
-            Average[2]=Calibration(Average[0],REAL1,REAL2,TEST1_S3,TEST2_S3);
+            Average[2]=Calibration(Average[2],REAL1,REAL2,TEST1_S3,TEST2_S3);
             w1.Window2(Average[2], addr, time);
             state[2]=1;            
-            num++;
+            sensor3 = 1;
         }
-        if(num!=0)
+        if((sensor1+sensor2+sensor3)==3)
         {
-            Average[3]=(Average[0] + Average[1] + Average[2])/num;
+            Average[3]=(Average[0] + Average[1] + Average[2])/(sensor1+sensor2+sensor3);
             w1.Window3(Average[3],time);
         }
     }

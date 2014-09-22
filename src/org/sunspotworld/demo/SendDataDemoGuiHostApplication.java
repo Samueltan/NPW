@@ -265,9 +265,9 @@ public class SendDataDemoGuiHostApplication {
 //        app.setup();
 //        app.run();
 //        
-//        SettingsProperty property = new SettingsProperty();
-//        int max = property.getMax_no_of_sensors();
-//        String auto = property.getSensor_auto_detect();
-//        ArrayList<String> list = property.getReserved_sensor_list();
+        SettingsProperty property = new SettingsProperty();
+        int max = property.getMax_no_of_sensors();
+        String auto = property.getSensor_auto_detect();
+        ArrayList<String> list = property.getReserved_sensor_list();
     }
 }

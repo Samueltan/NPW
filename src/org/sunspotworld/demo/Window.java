@@ -79,7 +79,7 @@ public class Window extends JFrame{
     }
     
     public void Window0(double val,String addr,long time){
-        jt0.append("Temperature of sensor 1:  "+ df.format(val) + " °„C at  " + fmt.format(new Date(time)) + "\n");
+        jt0.append("Temperature of sensor 1:  "+ df.format(val) + " C at  " + fmt.format(new Date(time)) + "\n");
         jt0.setCaretPosition(jt0.getText().length()); 
         int height=10;
         Point p = new Point();
@@ -89,7 +89,7 @@ public class Window extends JFrame{
     }
     
     public void Window1(double val,String addr,long time){
-        jt1.append("Temperature of sensor 2:  "+ df.format(val) + " °„C at  " + fmt.format(new Date(time)) + "\n");
+        jt1.append("Temperature of sensor 2:  "+ df.format(val) + " C at  " + fmt.format(new Date(time)) + "\n");
         jt1.setCaretPosition(jt1.getText().length());
         int height=10;
         Point p = new Point();
@@ -99,7 +99,7 @@ public class Window extends JFrame{
     }
     
     public void Window2(double val,String addr,long time){
-        jt2.append("Temperature of sensor 3:  "+ df.format(val) + " °„C at  " + fmt.format(new Date(time)) + "\n");
+        jt2.append("Temperature of sensor 3:  "+ df.format(val) + " C at  " + fmt.format(new Date(time)) + "\n");
         jt2.setCaretPosition(jt2.getText().length());
         int height=10;
         Point p = new Point();
@@ -108,7 +108,7 @@ public class Window extends JFrame{
         repaint();
     }
     public void Window3(double val,long time){
-        jt3.append("Temperature of all sensors:  "+ df.format(val) + " °„C at  " + fmt.format(new Date(time)) + "\n");
+        jt3.append("Temperature of all sensors:  "+ df.format(val) + " C at  " + fmt.format(new Date(time)) + "\n");
         jt3.setCaretPosition(jt3.getText().length());        
         int height=10;
         Point p = new Point();

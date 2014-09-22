@@ -60,7 +60,7 @@ public class DataWindow extends JFrame {
     public void addData(long t, double v) {
         time[index] = t;
         val[index++] = v;
-        dataTextArea.append("Average temperature:  " + df.format(v) + " °„C at  " +fmt.format(new Date(t)) + " \n");
+        dataTextArea.append("Average temperature:  " + df.format(v) + " C at  " +fmt.format(new Date(t)) + " \n");
         //System.out.println(t);
         dataTextArea.setCaretPosition(dataTextArea.getText().length());       
         repaint();

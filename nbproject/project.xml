@@ -4,7 +4,7 @@
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
             <!--Do not use Project Properties customizer when editing this file manually.-->
-            <name>TemperatureStation</name>
+            <name>senddata</name>
             <properties>
                 <property-file>${user.home}/.sunspot.properties</property-file>
                 <property-file>build.properties</property-file>
@@ -39,6 +39,19 @@
                 <action name="javadoc">
                     <target>javadoc</target>
                 </action>
+                <action name="run.single">
+                    <script>nbproject/ide-file-targets.xml</script>
+                    <target>run-selected-file-in-src</target>
+                    <context>
+                        <property>run.class</property>
+                        <folder>src</folder>
+                        <pattern>\.java$</pattern>
+                        <format>java-name</format>
+                        <arity>
+                            <one-file-only/>
+                        </arity>
+                    </context>
+                </action>
             </ide-actions>
             <export>
                 <type>folder</type>
@@ -70,12 +83,12 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/4">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/jooq-3.4.2.jar:lib/jooq-codegen-3.4.2.jar:lib/jooq-codegen-maven-3.4.2.jar:lib/jooq-meta-3.4.2.jar:lib/jooq-scala-3.4.2.jar:lib/sqlite-jdbc-3.7.2.jar:/Applications/NetBeans.app/Contents/Resources/NetBeans/platform6/modules/ext/swing-layout-1.0.jar:/Applications/NetBeans.app/Contents/Resources/NetBeans/ide7/modules/ext/AbsoluteLayout.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/multihop_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/ipv6lib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/squawk_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/RXTXcomm.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotclient_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/signing_host.jar:	:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/modules/ext/AbsoluteLayout.jar:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/platform/modules/ext/swing-layout-1.0.4.jar</classpath>
+                <classpath mode="compile">lib/jooq-3.4.2.jar:lib/jooq-codegen-3.4.2.jar:lib/jooq-codegen-maven-3.4.2.jar:lib/jooq-meta-3.4.2.jar:lib/jooq-scala-3.4.2.jar:lib/sqlite-jdbc-3.7.2.jar:	:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/modules/ext/AbsoluteLayout.jar:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/platform/modules/ext/swing-layout-1.0.4.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/ipv6lib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/multihop_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/RXTXcomm.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/signing_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotclient_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/squawk_common.jar</classpath>
                 <built-to>build</built-to>
-                <source-level>1.5</source-level>
+                <source-level>1.8</source-level>
             </compilation-unit>
         </java-data>
     </configuration>

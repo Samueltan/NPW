@@ -29,6 +29,7 @@ import com.sun.spot.io.j2me.radiogram.*;
 import com.sun.spot.peripheral.ota.OTACommandServer;
 import com.sun.spot.util.IEEEAddress;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import javax.microedition.io.*;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -258,10 +259,15 @@ public class SendDataDemoGuiHostApplication {
      */
     public static void main(String[] args) throws Exception {
         // register the application's name with the OTA Command server & start OTA running
-        OTACommandServer.start("SendDataDemo-GUI");
-
-        SendDataDemoGuiHostApplication app = new SendDataDemoGuiHostApplication();
-        app.setup();
-        app.run();
+//        OTACommandServer.start("SendDataDemo-GUI");
+//
+//        SendDataDemoGuiHostApplication app = new SendDataDemoGuiHostApplication();
+//        app.setup();
+//        app.run();
+//        
+//        SettingsProperty property = new SettingsProperty();
+//        int max = property.getMax_no_of_sensors();
+//        String auto = property.getSensor_auto_detect();
+//        ArrayList<String> list = property.getReserved_sensor_list();
     }
 }

@@ -73,7 +73,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">${hostagent.compile.classpath}:${libs.absolutelayout.classpath}:${libs.swing-layout.classpath}</classpath>
+                <classpath mode="compile">lib/jooq-3.4.2.jar:lib/jooq-codegen-3.4.2.jar:lib/jooq-codegen-maven-3.4.2.jar:lib/jooq-meta-3.4.2.jar:lib/jooq-scala-3.4.2.jar:lib/sqlite-jdbc-3.7.2.jar:/Applications/NetBeans.app/Contents/Resources/NetBeans/platform6/modules/ext/swing-layout-1.0.jar:/Applications/NetBeans.app/Contents/Resources/NetBeans/ide7/modules/ext/AbsoluteLayout.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/multihop_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/ipv6lib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotlib_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/squawk_common.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/RXTXcomm.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/spotclient_host.jar:/Users/samueltango/SunSPOT/sdk-yellow-101117-1/lib/signing_host.jar:	:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/java/modules/ext/AbsoluteLayout.jar:/Applications/NetBeans/NetBeans 8.0.app/Contents/Resources/NetBeans/platform/modules/ext/swing-layout-1.0.4.jar</classpath>
                 <built-to>build</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>

@@ -19,7 +19,7 @@ import java.util.Properties;
 public class SettingsProperty {
     private int host_port;
     private int max_no_of_sensors;
-    private String sensor_auto_detect;
+    private String use_reserved_sensors;
     private ArrayList<String> reserved_sensor_list;
     
     private double real1;
@@ -39,7 +39,7 @@ public class SettingsProperty {
 
             // get the property value and print it out
             max_no_of_sensors = Integer.parseInt(prop.getProperty("max_no_of_sensors"));
-            sensor_auto_detect = prop.getProperty("sensor_auto_detect");
+            use_reserved_sensors = prop.getProperty("use_reserved_sensors");
             String sensorList = prop.getProperty("reserved_sensor_list");
             reserved_sensor_list = (ArrayList<String>) Arrays.asList(sensorList.split("\\s*,\\s*"));
  
@@ -71,12 +71,12 @@ public class SettingsProperty {
         this.max_no_of_sensors = max_no_of_sensors;
     }
 
-    public String getSensor_auto_detect() {
-        return sensor_auto_detect;
+    public String getUse_reserved_sensors() {
+        return use_reserved_sensors;
     }
 
-    public void setSensor_auto_detect(String sensor_auto_detect) {
-        this.sensor_auto_detect = sensor_auto_detect;
+    public void setUse_reserved_sensors(String use_reserved_sensors) {
+        this.use_reserved_sensors = use_reserved_sensors;
     }
 
     public ArrayList<String> getReserved_sensor_list() {

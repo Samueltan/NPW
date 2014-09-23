@@ -46,17 +46,19 @@ import javax.swing.JTextArea;
  */
 public class SendDataDemoGuiHostApplication {
     // Broadcast port on which we listen for sensor samples
-    private static final int host_port;
+    private final int host_port;
     
     // Sensor related
     private int numberOfSensors;
+    private boolean useReservedSensors;
+    private ArrayList<String> reservedSensorList;
     private static final int MAX_DEGREE = 1000;
             
     // Calibration parameters
-    private final double real1;
-    private final double real2;
-    private ArrayList<Double> test1;
-    private ArrayList<Double> test2;
+    private double real1;
+    private double real2;
+    private ArrayList<Double> testList1;
+    private ArrayList<Double> testList2;
     
 //    int sensor1 = 0;
 //    int senssensor1or2 = 0;
@@ -69,18 +71,23 @@ public class SendDataDemoGuiHostApplication {
     double[] a0=new double[3];
     double[] a1=new double[3];
     double[] a2=new double[3]; 
-    double[] Average=new double[4];
+    double[] average=new double[4];
     int[] state=new int[3];
     Window w1=new Window();
     //Thread t=new Thread(w1);
     
     public SendDataDemoGuiHostApplication(){
         SettingsProperty property = new SettingsProperty();
-        host_port =  property.get
-        int max = property.getMax_no_of_sensors();
-        String auto = property.getSensor_auto_detect();
-        ArrayList<String> list = property.getReserved_sensor_list();
-        
+        host_port =  property.getHost_port();
+        numberOfSensors = property.getMax_no_of_sensors();
+        String useReserved = property.getUse_reserved_sensors();
+        if(useReserved.equalsIgnoreCase("yes")){
+            useReservedSensors = true;
+            reservedSensorList = property.getReserved_sensor_list();
+        }else if(useReserved.equalsIgnoreCase("yes")){
+            useReservedSensors = false;
+            reservedSensorList = null;
+        }
     }
     
     private void setup() {
@@ -158,26 +165,29 @@ public class SendDataDemoGuiHostApplication {
             try {
                 // Read sensor sample received over the radio
                 rCon.receive(dg); 
-                String addr = dg.getAddress(); 
+                String addr = dg.getAddress().substring(15); // Get the last 4 digits
                 long addr1 = 100;
                 long time = dg.readLong();      // read time of the reading
                 double val = dg.readDouble();         // read the sensor value
                   
+                // Save into database
+                
+                
                 DataWindow dw1 = findPlot(addr1,val,time);  
-                this.Average(val, addr, time);
-                if(addr.equals("0014.4F01.0000.7F6D")){
+                this.getAverage(val, addr, time);
+                if(addr.equals("7F6D")){
                     DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-                    dw.addData(time, Average[0]);
+                    dw.addData(time, average[0]);
                 }
-                if(addr.equals("0014.4F01.0000.3560")){
+                if(addr.equals("3560")){
                     DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-                    dw.addData(time, Average[1]);
+                    dw.addData(time, average[1]);
                 }
-                if(addr.equals("0014.4F01.0000.465E")){
+                if(addr.equals("465E")){
                     DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-                    dw.addData(time, Average[2]);
+                    dw.addData(time, average[2]);
                 }
-                dw1.addData(time, Average[3]);
+                dw1.addData(time, average[3]);
                 
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
@@ -186,14 +196,14 @@ public class SendDataDemoGuiHostApplication {
         }
     }
     
-    public double Calibration(double input, double real1, double real2, double test1, double test2){
-        double Calibra1, Calibra2, result;
+    public double calibration(double input, double real1, double real2, double test1, double test2){
+        double calibra1, calibra2, result;
         if((test1!=test2)){
-            Calibra1= (real1-real2)/(test1-test2);
-            Calibra2 = (test1*real2 - test2*real1)/(test1-test2);
-            result = (Calibra1 * input) + Calibra2;
-            //System.out.println("a1="+Calibra1);
-            //System.out.println("a2="+Calibra2);
+            calibra1= (real1-real2)/(test1-test2);
+            calibra2 = (test1*real2 - test2*real1)/(test1-test2);
+            result = (calibra1 * input) + calibra2;
+            //System.out.println("a1="+calibra1);
+            //System.out.println("a2="+calibra2);
         }   
         else{
             result = input;
@@ -201,67 +211,73 @@ public class SendDataDemoGuiHostApplication {
         return result;
     }
         
-    public void Average(double val,String addr,long time){
-        if(addr.equals("0014.4F01.0000.7F6D")){
+    public void getAverage(double val,String addr,long time){
+        if(addr.equals("7F6D")){
             a0[1]=a0[0];
             a0[2]=a0[1];
             a0[0]=val;
             if(a0[2]!=MAX_DEGREE){
-                Average[0]=(a0[0]+a0[1]+a0[2])/3;
+                average[0]=(a0[0]+a0[1]+a0[2])/3;
             }else{
                 if(a0[1]!=MAX_DEGREE){
-                    Average[0]=(a0[0]+a0[1])/2;
+                    average[0]=(a0[0]+a0[1])/2;
                 }else{
-                    Average[0]=val;
+                    average[0]=val;
                 }
-            }    
-            Average[0]=Calibration(Average[0],REAL1,REAL2,TEST1_S1,TEST2_S1);
-            w1.Window0(Average[0], addr, time);
+            }
+            double test1 = testList1.get(0);
+            double test2 = testList2.get(0);
+            average[0]=calibration(average[0], real1, real2, test1, test2);
+            w1.Window0(average[0], addr, time);
             state[0]=1;
-            sensor1 = 1;
+//            sensor1 = 1;
         }  
-        if(addr.equals("0014.4F01.0000.3560")){
+        if(addr.equals("3560")){
             a1[1]=a1[0];
             a1[2]=a1[1];
             a1[0]=val;
             if(a1[2]!=MAX_DEGREE){
-                Average[1]=(a1[0]+a1[1]+a1[2])/3;
+                average[1]=(a1[0]+a1[1]+a1[2])/3;
             }else{
                 if(a1[1]!=MAX_DEGREE){
-                    Average[1]=(a1[0]+a1[1])/2;
+                    average[1]=(a1[0]+a1[1])/2;
                 }else{
-                    Average[1]=val;
+                    average[1]=val;
                 }
             }            
-            Average[1]=Calibration(Average[1],REAL1,REAL2,TEST1_S2,TEST2_S2);
-            w1.Window1(Average[1], addr, time);
+            double test1 = testList1.get(1);
+            double test2 = testList2.get(1);
+            average[1]=calibration(average[1], real1, real2, test1, test2);
+            w1.Window1(average[1], addr, time);
             state[1]=1;            
-            sensor2 = 1;
+//            sensor2 = 1;
         }  
-        if(addr.equals("0014.4F01.0000.465E")){
+        if(addr.equals("465E")){
             a2[1]=a2[0];
             a2[2]=a2[1];
             a2[0]=val;
             if(a2[2]!=MAX_DEGREE){
-                Average[2]=(a2[0]+a2[1]+a2[2])/3;
+                average[2]=(a2[0]+a2[1]+a2[2])/3;
             }   
             else{
                 if(a2[1]!=MAX_DEGREE){
-                    Average[2]=(a2[0]+a2[1])/2;
+                    average[2]=(a2[0]+a2[1])/2;
                 }else{
-                    Average[2]=val;
+                    average[2]=val;
                 }
             }   
-            Average[2]=Calibration(Average[2],REAL1,REAL2,TEST1_S3,TEST2_S3);
-            w1.Window2(Average[2], addr, time);
+            double test1 = testList1.get(2);
+            double test2 = testList2.get(3);
+            average[2]=calibration(average[2], real1, real2, test1, test2);
+            w1.Window2(average[2], addr, time);
             state[2]=1;            
-            sensor3 = 1;
+//            sensor3 = 1;
         }
-        if((sensor1+sensor2+sensor3)==3)
-        {
-            Average[3]=(Average[0] + Average[1] + Average[2])/(sensor1+sensor2+sensor3);
-            w1.Window3(Average[3],time);
-        }
+//        if((sensor1+sensor2+sensor3)==3)
+//        {
+//            average[3]=(average[0] + average[1] + average[2])/(sensor1+sensor2+sensor3);
+//            w1.Window3(average[3],time);
+//        }
     }
     
     /**

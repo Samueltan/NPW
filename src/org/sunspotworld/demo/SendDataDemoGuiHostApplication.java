@@ -28,12 +28,20 @@ import com.sun.spot.io.j2me.radiogram.*;
 
 import com.sun.spot.peripheral.ota.OTACommandServer;
 import com.sun.spot.util.IEEEAddress;
+import static dao.generated.tables.Temperature.TEMPERATURE;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import javax.microedition.io.*;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Result;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 
 /**
@@ -84,7 +92,7 @@ public class SendDataDemoGuiHostApplication {
         if(useReserved.equalsIgnoreCase("yes")){
             useReservedSensors = true;
             reservedSensorList = property.getReserved_sensor_list();
-        }else if(useReserved.equalsIgnoreCase("yes")){
+        }else if(useReserved.equalsIgnoreCase("no")){
             useReservedSensors = false;
             reservedSensorList = null;
         }
@@ -171,7 +179,7 @@ public class SendDataDemoGuiHostApplication {
                 double val = dg.readDouble();         // read the sensor value
                   
                 // Save into database
-                
+                saveToDB(addr, (int)time, (float)val);
                 
                 DataWindow dw1 = findPlot(addr1,val,time);  
                 this.getAverage(val, addr, time);
@@ -192,6 +200,40 @@ public class SendDataDemoGuiHostApplication {
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
                 throw e;
+            }
+        }
+    }
+    
+    public void saveToDB(String address, int timestamp, float value){
+        java.sql.Connection conn = null;
+        try {
+            // For Sqlite
+            Class.forName("org.sqlite.JDBC").newInstance();
+            conn = DriverManager.getConnection("jdbc:sqlite:library.db");
+
+            DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
+
+            create.insertInto(TEMPERATURE, TEMPERATURE.ADDR, TEMPERATURE.TIME, TEMPERATURE.TEMPERATURE_)
+                    .values(address, timestamp, value).execute();
+
+//                    Result<Record> result = create.select().from(TEMPERATURE).fetch();
+//                    System.out.println("Read from db:");
+//                    for (Record r : result) {
+//                        String add = r.getValue(TEMPERATURE.ADDR);
+//                        int tm = r.getValue(TEMPERATURE.TIME);
+//                        float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
+//
+//                        System.out.println("address: " + add + " \ttime: " + tm + " \tvalue: " + vl);
+//                    }
+        } catch (Exception e) {
+            // For the sake of this tutorial, let's keep exception handling simple
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ignore) {
+                }
             }
         }
     }

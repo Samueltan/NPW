@@ -46,18 +46,21 @@ import javax.swing.JTextArea;
  */
 public class SendDataDemoGuiHostApplication {
     // Broadcast port on which we listen for sensor samples
-    private static final int HOST_PORT = 68;
-    final double REAL1 = 23.1;
-    final double REAL2 = 2.9;
-    final double TEST1_S1 = 16.4;
-    final double TEST2_S1 = 4.3;
-    final double TEST1_S2 = 19.4;
-    final double TEST2_S2 = 8;
-    final double TEST1_S3 = 17.9;
-    final double TEST2_S3 = 7.8;
-    int sensor1 = 0;
-    int sensor2 = 0;
-    int sensor3 = 0;
+    private static final int host_port;
+    
+    // Sensor related
+    private int numberOfSensors;
+    private static final int MAX_DEGREE = 1000;
+            
+    // Calibration parameters
+    private final double real1;
+    private final double real2;
+    private ArrayList<Double> test1;
+    private ArrayList<Double> test2;
+    
+//    int sensor1 = 0;
+//    int senssensor1or2 = 0;
+//    int sensor3 = 0;
     
     private JTextArea status;
     private long[] addresses = new long[8];
@@ -70,6 +73,15 @@ public class SendDataDemoGuiHostApplication {
     int[] state=new int[3];
     Window w1=new Window();
     //Thread t=new Thread(w1);
+    
+    public SendDataDemoGuiHostApplication(){
+        SettingsProperty property = new SettingsProperty();
+        host_port =  property.get
+        int max = property.getMax_no_of_sensors();
+        String auto = property.getSensor_auto_detect();
+        ArrayList<String> list = property.getReserved_sensor_list();
+        
+    }
     
     private void setup() {
         JFrame fr = new JFrame("Send Data Host App");
@@ -116,15 +128,15 @@ public class SendDataDemoGuiHostApplication {
     private void run() throws Exception {
         RadiogramConnection rCon;
         Radiogram dg;
-        a0[0]=200;
-        a0[1]=200;
-        a0[2]=200;
-        a1[0]=200;
-        a1[1]=200;
-        a1[2]=200;
-        a2[0]=200;
-        a2[1]=200;
-        a2[2]=200;
+        a0[0]=MAX_DEGREE;
+        a0[1]=MAX_DEGREE;
+        a0[2]=MAX_DEGREE;
+        a1[0]=MAX_DEGREE;
+        a1[1]=MAX_DEGREE;
+        a1[2]=MAX_DEGREE;
+        a2[0]=MAX_DEGREE;
+        a2[1]=MAX_DEGREE;
+        a2[2]=MAX_DEGREE;
         state[0]=0;
         state[1]=0;
         state[2]=0;
@@ -132,7 +144,7 @@ public class SendDataDemoGuiHostApplication {
             // Open up a server-side broadcast radiogram connection
             // to listen for sensor readings being sent by different SPOTs
             //t.start();
-            rCon = (RadiogramConnection) Connector.open("radiogram://:" + HOST_PORT);
+            rCon = (RadiogramConnection) Connector.open("radiogram://:" + host_port);
             dg = (Radiogram)rCon.newDatagram(rCon.getMaximumLength());
         } catch (Exception e) {
              System.err.println("setUp caught " + e.getMessage());
@@ -194,10 +206,10 @@ public class SendDataDemoGuiHostApplication {
             a0[1]=a0[0];
             a0[2]=a0[1];
             a0[0]=val;
-            if(a0[2]!=200){
+            if(a0[2]!=MAX_DEGREE){
                 Average[0]=(a0[0]+a0[1]+a0[2])/3;
             }else{
-                if(a0[1]!=200){
+                if(a0[1]!=MAX_DEGREE){
                     Average[0]=(a0[0]+a0[1])/2;
                 }else{
                     Average[0]=val;
@@ -212,10 +224,10 @@ public class SendDataDemoGuiHostApplication {
             a1[1]=a1[0];
             a1[2]=a1[1];
             a1[0]=val;
-            if(a1[2]!=200){
+            if(a1[2]!=MAX_DEGREE){
                 Average[1]=(a1[0]+a1[1]+a1[2])/3;
             }else{
-                if(a1[1]!=200){
+                if(a1[1]!=MAX_DEGREE){
                     Average[1]=(a1[0]+a1[1])/2;
                 }else{
                     Average[1]=val;
@@ -230,11 +242,11 @@ public class SendDataDemoGuiHostApplication {
             a2[1]=a2[0];
             a2[2]=a2[1];
             a2[0]=val;
-            if(a2[2]!=200){
+            if(a2[2]!=MAX_DEGREE){
                 Average[2]=(a2[0]+a2[1]+a2[2])/3;
             }   
             else{
-                if(a2[1]!=200){
+                if(a2[1]!=MAX_DEGREE){
                     Average[2]=(a2[0]+a2[1])/2;
                 }else{
                     Average[2]=val;
@@ -259,15 +271,11 @@ public class SendDataDemoGuiHostApplication {
      */
     public static void main(String[] args) throws Exception {
         // register the application's name with the OTA Command server & start OTA running
-//        OTACommandServer.start("SendDataDemo-GUI");
-//
-//        SendDataDemoGuiHostApplication app = new SendDataDemoGuiHostApplication();
-//        app.setup();
-//        app.run();
-//        
-        SettingsProperty property = new SettingsProperty();
-        int max = property.getMax_no_of_sensors();
-        String auto = property.getSensor_auto_detect();
-        ArrayList<String> list = property.getReserved_sensor_list();
+        OTACommandServer.start("SendDataDemo-GUI");
+
+        SendDataDemoGuiHostApplication app = new SendDataDemoGuiHostApplication();
+        app.setup();
+        app.run();
+        
     }
 }

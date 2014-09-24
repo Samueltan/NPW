@@ -35,6 +35,6 @@ public class Keys {
 	// -------------------------------------------------------------------------
 
 	private static class UniqueKeys0 extends org.jooq.impl.AbstractKeys {
-		public static final org.jooq.UniqueKey<dao.generated.tables.records.TemperatureRecord> PK_TEMPERATURE = createUniqueKey(dao.generated.tables.Temperature.TEMPERATURE, dao.generated.tables.Temperature.TEMPERATURE.ADDR);
+		public static final org.jooq.UniqueKey<dao.generated.tables.records.TemperatureRecord> PK_TEMPERATURE = createUniqueKey(dao.generated.tables.Temperature.TEMPERATURE, dao.generated.tables.Temperature.TEMPERATURE.ADDR, dao.generated.tables.Temperature.TEMPERATURE.TIME);
 	}
 }

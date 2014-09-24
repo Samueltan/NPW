@@ -217,7 +217,7 @@ public class SendDataDemoGuiHostApplication {
         try {
             // For Sqlite
             Class.forName("org.sqlite.JDBC").newInstance();
-            conn = DriverManager.getConnection("jdbc:sqlite:library.db");
+            conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
 
             DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
 

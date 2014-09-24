@@ -11,7 +11,7 @@ package dao.generated.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Temperature extends org.jooq.impl.TableImpl<dao.generated.tables.records.TemperatureRecord> {
 
-	private static final long serialVersionUID = -582733445;
+	private static final long serialVersionUID = 1727085496;
 
 	/**
 	 * The singleton instance of <code>temperature</code>
@@ -34,7 +34,7 @@ public class Temperature extends org.jooq.impl.TableImpl<dao.generated.tables.re
 	/**
 	 * The column <code>temperature.time</code>.
 	 */
-	public final org.jooq.TableField<dao.generated.tables.records.TemperatureRecord, java.lang.Integer> TIME = createField("time", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+	public final org.jooq.TableField<dao.generated.tables.records.TemperatureRecord, java.lang.Object> TIME = createField("time", org.jooq.impl.DefaultDataType.getDefaultDataType("long"), this, "");
 
 	/**
 	 * The column <code>temperature.temperature</code>.

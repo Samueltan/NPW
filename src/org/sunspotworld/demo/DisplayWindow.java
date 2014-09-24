@@ -17,7 +17,7 @@ import javax.swing.*;
  *
  * @author Xin
  */
-public class Window extends JFrame{
+public class DisplayWindow extends JFrame{
     JTextArea jt0,jt1,jt2,jt3;
     JScrollPane js0,js1,js2,js3;
     JScrollBar sb0,sb1,sb2,sb3;
@@ -27,7 +27,7 @@ public class Window extends JFrame{
     DecimalFormat df = new DecimalFormat(".00");
     
     
-    public Window(){
+    public DisplayWindow(){
         
         this.setLayout(new GridLayout(8,1));
         jl4=new JLabel("The Sensors'");

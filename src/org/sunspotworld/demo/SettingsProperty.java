@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -20,7 +21,7 @@ public class SettingsProperty {
     private int host_port;
     private int max_no_of_sensors;
     private String use_reserved_sensors;
-    private ArrayList<String> reserved_sensor_list;
+    private List<String> reserved_sensor_list;
     
     private double real1;
     private double real2;
@@ -38,18 +39,29 @@ public class SettingsProperty {
             prop.load(input);
 
             // get the property value and print it out
+            host_port = Integer.parseInt(prop.getProperty("host_port"));
             max_no_of_sensors = Integer.parseInt(prop.getProperty("max_no_of_sensors"));
             use_reserved_sensors = prop.getProperty("use_reserved_sensors");
             String sensorList = prop.getProperty("reserved_sensor_list");
-            reserved_sensor_list = (ArrayList<String>) Arrays.asList(sensorList.split("\\s*,\\s*"));
- 
+            reserved_sensor_list = Arrays.asList(sensorList.split("\\s*,\\s*"));
             real1 = Double.parseDouble(prop.getProperty("calibration.real1"));
             real2 = Double.parseDouble(prop.getProperty("calibration.real2"));
+            test1 = new ArrayList();
+            test2 = new ArrayList();
+            System.out.println("***** host_port: " + host_port);
+            System.out.println("***** max_no_of_sensors = " + max_no_of_sensors);
+            System.out.println("***** use_reserved_sensors = " + use_reserved_sensors);
+//            System.out.println("***** r1 = " + real1);
+//            System.out.println("***** r2 = " + real2);
             
             for(int ii=1; ii<=max_no_of_sensors; ++ii){
+//                System.out.println("***** cal.test1.s" + ii + " = "+ prop.getProperty("calibration.test1.s" + ii));
+//                System.out.println("***** cal.test2.s" + ii + " = "+ prop.getProperty("calibration.test2.s" + ii));
                 test1.add(Double.parseDouble(prop.getProperty("calibration.test1.s" + ii)));
                 test2.add(Double.parseDouble(prop.getProperty("calibration.test2.s" + ii)));
             }
+            
+            
 	} catch (IOException ex) {
 		ex.printStackTrace();
 	} finally {
@@ -79,7 +91,7 @@ public class SettingsProperty {
         this.use_reserved_sensors = use_reserved_sensors;
     }
 
-    public ArrayList<String> getReserved_sensor_list() {
+    public List<String> getReserved_sensor_list() {
         return reserved_sensor_list;
     }
 

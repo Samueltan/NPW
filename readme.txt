@@ -2,7 +2,7 @@ CREATE DATABASE challenges;
 
 CREATE TABLE `temperature` (
   `addr` char(4) NOT NULL,
-  `time` long NOT NULL,
+  `time` text NOT NULL,
   `temperature` real DEFAULT NULL
 );
 

@@ -168,10 +168,15 @@ public class SendDataDemoGuiHostApplication {
                 // Read sensor sample received over the radio
                 rCon.receive(dg); 
                 String addr = dg.getAddress().substring(15); // Get the last 4 digits
-    
-                time = dg.readLong();      // read time of the reading
-//                time = System.currentTimeMillis() / 1000;
                 
+                /***
+                 * This may be a stupid bug or else a very rediculous limitation
+                 * the dg.readLong() line can not be commented or the val will all return 0!
+                 * even if we want to use our own system time, we need to call the readLong() first!!!
+                 * 
+                 */
+                time = dg.readLong();      // read time of the reading
+                time = System.currentTimeMillis();
                 double val = dg.readDouble();         // read the sensor value
                 DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String strTime = fmt.format(new Date(time)).toString();
@@ -179,7 +184,7 @@ public class SendDataDemoGuiHostApplication {
                 System.out.println("***** " + addr + "\t" + strTime + "\t" + df.format(val));
                 
                 // Save into database
-                saveToDB(addr, (int)time, (float)val);
+                saveToDB(addr, Long.toString(time), (float)val);
                  
                 DataWindow dw = null;
                 // If use reserved sensors, compare the detected sensor with the reserved list
@@ -209,9 +214,10 @@ public class SendDataDemoGuiHostApplication {
                     }
                 }
                 
+                // For summary window
                 float avg = getAverage(time);
-                dw = findPlot(GENERIC_SENSOR_ID, avg,time);
-                dw.addData(time, avg);
+                DataWindow dwSummary = findPlot(GENERIC_SENSOR_ID, avg,time);
+                dwSummary.addData(time, avg);
                 
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
@@ -220,7 +226,7 @@ public class SendDataDemoGuiHostApplication {
         }
     }
     
-    public void saveToDB(String address, int timestamp, float value){
+    public void saveToDB(String address, String timestamp, float value){
         java.sql.Connection conn = null;
         try {
             // For Sqlite
@@ -232,6 +238,15 @@ public class SendDataDemoGuiHostApplication {
             create.insertInto(TEMPERATURE, TEMPERATURE.ADDR, TEMPERATURE.TIME, TEMPERATURE.TEMPERATURE_)
                     .values(address, timestamp, value).execute();
 
+//                    Result<Record> result = create.select().from(TEMPERATURE).fetch();
+//                    System.out.println("Read from db:");
+//                    for (Record r : result) {
+//                        String add = r.getValue(TEMPERATURE.ADDR);
+//                        int tm = r.getValue(TEMPERATURE.TIME);
+//                        float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
+//
+//                        System.out.println("address: " + add + " \ttime: " + tm + " \tvalue: " + vl);
+//                    }
         } catch (Exception e) {
             // For the sake of this tutorial, let's keep exception handling simple
             e.printStackTrace();
@@ -267,20 +282,19 @@ public class SendDataDemoGuiHostApplication {
             // For Sqlite
             Class.forName("org.sqlite.JDBC").newInstance();
             conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
-//            System.out.println("***** time = " + time);
-//            System.out.println("***** conn = " + conn);
             DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
-            Result<Record> result = create.select().from(TEMPERATURE).where(TEMPERATURE.TIME.equal(time)).fetch();
-            System.out.println("Read from db:");
+            Result<Record> result = create.select().from(TEMPERATURE).where(TEMPERATURE.TIME.equal(Long.toString(time))).fetch();
+//            System.out.println("Read from db:");
 
             float sum = 0;
             for (Record r : result) {
                 String add = r.getValue(TEMPERATURE.ADDR);
                 float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
                 sum += vl;
-                System.out.println("address: " + add + " \tvalue: " + vl);
+//                System.out.println("address: " + add + " \tvalue: " + vl);
             }
             rtn = sum / result.size();
+//            System.out.println("***** time = " + time + ", sum = " + sum + ", size = " + result.size() + ", avg = " + rtn);
         }catch(Exception e){
             e.printStackTrace();
         } finally {

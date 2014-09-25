@@ -48,9 +48,9 @@ public class SettingsProperty {
             real2 = Double.parseDouble(prop.getProperty("calibration.real2"));
             test1 = new ArrayList();
             test2 = new ArrayList();
-            System.out.println("***** host_port: " + host_port);
-            System.out.println("***** max_no_of_sensors = " + max_no_of_sensors);
-            System.out.println("***** use_reserved_sensors = " + use_reserved_sensors);
+//            System.out.println("***** host_port: " + host_port);
+//            System.out.println("***** max_no_of_sensors = " + max_no_of_sensors);
+//            System.out.println("***** use_reserved_sensors = " + use_reserved_sensors);
 //            System.out.println("***** r1 = " + real1);
 //            System.out.println("***** r2 = " + real2);
             

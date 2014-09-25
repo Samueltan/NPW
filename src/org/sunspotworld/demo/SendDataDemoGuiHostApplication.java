@@ -32,7 +32,10 @@ import static dao.generated.tables.Temperature.TEMPERATURE;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import javax.microedition.io.*;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -179,7 +182,10 @@ public class SendDataDemoGuiHostApplication {
                 String addr = dg.getAddress().substring(15); // Get the last 4 digits
                 long time = dg.readLong();      // read time of the reading
                 double val = dg.readDouble();         // read the sensor value
-                System.out.println("***** " + addr + "\t" + time + "\t" + val);
+                DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String strTime = fmt.format(new Date(time)).toString();
+                DecimalFormat df = new DecimalFormat(".0");
+                System.out.println("***** " + addr + "\t" + strTime + "\t" + df.format(val));
                 
                 // Save into database
                 saveToDB(addr, (int)time, (float)val);
@@ -190,7 +196,7 @@ public class SendDataDemoGuiHostApplication {
 //                    dw.addData(time, average[0]);
                     dw.addData(time, val);
                 }
-                if(addr.equals("3560")){
+                if(addr.equals("359D")){
                     DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
 //                    dw.addData(time, average[1]);
                     dw.addData(time, val);

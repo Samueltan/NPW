@@ -45,7 +45,7 @@ public class DataWindow extends JFrame {
     private long[] time = new long[MAX_SAMPLES];
     private double[] val = new double[MAX_SAMPLES];
     DateFormat fmt = DateFormat.getTimeInstance();
-    DecimalFormat df = new DecimalFormat(".00");
+    DecimalFormat df = new DecimalFormat(".0");
 
     /** Creates new form DataWindow */
     public DataWindow() {

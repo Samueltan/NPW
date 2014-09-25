@@ -60,7 +60,7 @@ public class SendDataDemoGuiHostApplication {
     private final int host_port;
     
     // Sensor related
-    private int numberOfSensors;
+    private int maxNumberOfSensors;
     private boolean useReservedSensors;
     private ArrayList<String> reservedSensorList;
     private static final int MAX_DEGREE = 1000;
@@ -69,29 +69,22 @@ public class SendDataDemoGuiHostApplication {
     // Calibration parameters
     private double real1;
     private double real2;
-    private ArrayList<Double> testList1;
-    private ArrayList<Double> testList2;
-    
-//    int sensor1 = 0;
-//    int senssensor1or2 = 0;
-//    int sensor3 = 0;
+    private ArrayList<Double> test1;
+    private ArrayList<Double> test2;
+    private ArrayList<String> sensors;
     
     private JTextArea status;
     private long[] addresses = new long[8];
     private DataWindow[] plots = new DataWindow[8];
     DateFormat fmt = DateFormat.getTimeInstance();
-    double[] a0=new double[3];
-    double[] a1=new double[3];
-    double[] a2=new double[3]; 
     double[] average=new double[4];
-    int[] state=new int[3];
 //    DisplayWindow w1;
     //Thread t=new Thread(w1);
     
     public SendDataDemoGuiHostApplication(){
         SettingsProperty property = new SettingsProperty();
         host_port =  property.getHost_port();
-        numberOfSensors = property.getMax_no_of_sensors();
+        maxNumberOfSensors = property.getMax_no_of_sensors();
         String useReserved = property.getUse_reserved_sensors();
         if(useReserved.equalsIgnoreCase("yes")){
             useReservedSensors = true;
@@ -101,6 +94,12 @@ public class SendDataDemoGuiHostApplication {
             reservedSensorList = null;
         }
         
+        real1 = property.getReal1();
+        real2 = property.getReal2();
+        test1 = property.getTest1();
+        test2 = property.getTest2();
+        
+        sensors = new ArrayList<String>();
 //        w1=new DisplayWindow();
     }
     
@@ -149,18 +148,6 @@ public class SendDataDemoGuiHostApplication {
     private void run() throws Exception {
         RadiogramConnection rCon;
         Radiogram dg;
-        a0[0]=MAX_DEGREE;
-        a0[1]=MAX_DEGREE;
-        a0[2]=MAX_DEGREE;
-        a1[0]=MAX_DEGREE;
-        a1[1]=MAX_DEGREE;
-        a1[2]=MAX_DEGREE;
-        a2[0]=MAX_DEGREE;
-        a2[1]=MAX_DEGREE;
-        a2[2]=MAX_DEGREE;
-        state[0]=0;
-        state[1]=0;
-        state[2]=0;
         try {
             // Open up a server-side broadcast radiogram connection
             // to listen for sensor readings being sent by different SPOTs
@@ -190,22 +177,40 @@ public class SendDataDemoGuiHostApplication {
                 // Save into database
                 saveToDB(addr, (int)time, (float)val);
                  
-//                this.getAverage(val, addr, time);
-                if(addr.equals("7F6D")){
-                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-//                    dw.addData(time, average[0]);
-                    dw.addData(time, val);
-                }
-                if(addr.equals("359D")){
-                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-//                    dw.addData(time, average[1]);
-                    dw.addData(time, val);
-                }
-                if(addr.equals("465E")){
-                    DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
-//                    dw.addData(time, average[2]);
-                    dw.addData(time, val);
-                }
+                DataWindow dw = null;
+                // If use reserved sensors, compare the detected sensor with the reserved list
+                // Only generate graph for the reserved sensors
+//                if(useReservedSensors){
+//                    System.out.println("use reserved sensors");
+//                    if(reservedSensorList.contains(addr)){
+//                        dw = findPlot(dg.getAddressAsLong(),val,time);
+//                        dw.addData(time, val);
+//                        sensors.add(addr);
+//                    }
+////                    if(addr.equals("359D")){
+////                        DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+////    //                    dw.addData(time, average[1]);
+////                        dw.addData(time, val);
+////                    }
+////                    if(addr.equals("465E")){
+////                        DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+////    //                    dw.addData(time, average[2]);
+////                        dw.addData(time, val);
+////                    }
+//                }else{
+//                    System.out.println("do not use reserved sensors");
+//                    // If donot use reserved sensors, all the detected will be accepted 
+//                    // (limited by the max_no_of_sensors)
+//                    if(sensors.contains(addr)){
+//                        dw = findPlot(dg.getAddressAsLong(),val,time);
+//                        dw.addData(time, val);
+//                    }else{
+//                        if(sensors.size() < maxNumberOfSensors)
+//                            dw = findPlot(dg.getAddressAsLong(),val,time);
+//                            dw.addData(time, val);
+//                            sensors.add(addr);
+//                        }
+//                }
                 
 //                DataWindow dwGeneric = findPlot(GENERIC_SENSOR_ID,val,time); 
 //                dwGeneric.addData(time, average[3]);
@@ -266,75 +271,6 @@ public class SendDataDemoGuiHostApplication {
         }
         return result;
     }
-        
-//    public void getAverage(double val,String addr,long time){
-//        if(addr.equals("7F6D")){
-//            a0[1]=a0[0];
-//            a0[2]=a0[1];
-//            a0[0]=val;
-//            if(a0[2]!=MAX_DEGREE){
-//                average[0]=(a0[0]+a0[1]+a0[2])/3;
-//            }else{
-//                if(a0[1]!=MAX_DEGREE){
-//                    average[0]=(a0[0]+a0[1])/2;
-//                }else{
-//                    average[0]=val;
-//                }
-//            }
-//            double test1 = testList1.get(0);
-//            double test2 = testList2.get(0);
-//            average[0]=calibration(average[0], real1, real2, test1, test2);
-////            w1.Window0(average[0], addr, time);
-//            state[0]=1;
-////            sensor1 = 1;
-//        }  
-//        if(addr.equals("3560")){
-//            a1[1]=a1[0];
-//            a1[2]=a1[1];
-//            a1[0]=val;
-//            if(a1[2]!=MAX_DEGREE){
-//                average[1]=(a1[0]+a1[1]+a1[2])/3;
-//            }else{
-//                if(a1[1]!=MAX_DEGREE){
-//                    average[1]=(a1[0]+a1[1])/2;
-//                }else{
-//                    average[1]=val;
-//                }
-//            }            
-//            double test1 = testList1.get(1);
-//            double test2 = testList2.get(1);
-//            average[1]=calibration(average[1], real1, real2, test1, test2);
-////            w1.Window1(average[1], addr, time);
-//            state[1]=1;            
-////            sensor2 = 1;
-//        }  
-//        if(addr.equals("465E")){
-//            a2[1]=a2[0];
-//            a2[2]=a2[1];
-//            a2[0]=val;
-//            if(a2[2]!=MAX_DEGREE){
-//                average[2]=(a2[0]+a2[1]+a2[2])/3;
-//            }   
-//            else{
-//                if(a2[1]!=MAX_DEGREE){
-//                    average[2]=(a2[0]+a2[1])/2;
-//                }else{
-//                    average[2]=val;
-//                }
-//            }   
-//            double test1 = testList1.get(2);
-//            double test2 = testList2.get(3);
-//            average[2]=calibration(average[2], real1, real2, test1, test2);
-////            w1.Window2(average[2], addr, time);
-//            state[2]=1;            
-////            sensor3 = 1;
-//        }
-////        if((sensor1+sensor2+sensor3)==3)
-////        {
-////            average[3]=(average[0] + average[1] + average[2])/(sensor1+sensor2+sensor3);
-////            w1.Window3(average[3],time);
-////        }
-//    }
     
      public void getAverage(double val,String addr,long time){
 //        if((sensor1+sensor2+sensor3)==3)

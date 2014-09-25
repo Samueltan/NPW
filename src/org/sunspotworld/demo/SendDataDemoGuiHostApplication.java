@@ -262,12 +262,39 @@ public class SendDataDemoGuiHostApplication {
         return result;
     }
     
-     public void getAverage(double val,String addr,long time){
-//        if((sensor1+sensor2+sensor3)==3)
-//        {
-//            average[3]=(average[0] + average[1] + average[2])/(sensor1+sensor2+sensor3);
-//            w1.Window3(average[3],time);
-//        }
+    public float getAverage(long time){
+        java.sql.Connection conn = null;
+        float rtn = 0;
+        try {
+            // For Sqlite
+            Class.forName("org.sqlite.JDBC").newInstance();
+            conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
+            System.out.println("***** time = " + time);
+            System.out.println("***** conn = " + conn);
+            DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
+            Result<Record> result = create.select().from(TEMPERATURE).where(TEMPERATURE.TIME.equal(time)).fetch();
+            System.out.println("Read from db:");
+
+            float sum = 0;
+            for (Record r : result) {
+                String add = r.getValue(TEMPERATURE.ADDR);
+                float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
+                sum += vl;
+                System.out.println("address: " + add + " \tvalue: " + vl);
+            }
+            rtn = sum / result.size();
+        }catch(Exception e){
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ignore) {
+                }
+            }
+        }
+
+        return rtn;
     }
      
     /**

@@ -3,8 +3,7 @@ CREATE DATABASE challenges;
 CREATE TABLE `temperature` (
   `addr` char(4) NOT NULL,
   `time` long NOT NULL,
-  `temperature` real DEFAULT NULL,
-  CONSTRAINT pk_temp PRIMARY KEY (addr,time)
+  `temperature` real DEFAULT NULL
 );
 
 // To generate the DAO classes:

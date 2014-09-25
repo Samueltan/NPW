@@ -161,13 +161,17 @@ public class SendDataDemoGuiHostApplication {
 
         status.append("Listening...\n");        
 
+        long time;
         // Main data collection loop
         while (true) {
             try {
                 // Read sensor sample received over the radio
                 rCon.receive(dg); 
                 String addr = dg.getAddress().substring(15); // Get the last 4 digits
-                long time = dg.readLong();      // read time of the reading
+    
+                time = dg.readLong();      // read time of the reading
+//                time = System.currentTimeMillis() / 1000;
+                
                 double val = dg.readDouble();         // read the sensor value
                 DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String strTime = fmt.format(new Date(time)).toString();
@@ -205,9 +209,9 @@ public class SendDataDemoGuiHostApplication {
                     }
                 }
                 
-//                DataWindow dwGeneric = findPlot(GENERIC_SENSOR_ID,val,time); 
-//                dwGeneric.addData(time, average[3]);
-//                dwGeneric.addData(time, val);
+                float avg = getAverage(time);
+                dw = findPlot(GENERIC_SENSOR_ID, avg,time);
+                dw.addData(time, avg);
                 
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
@@ -228,15 +232,6 @@ public class SendDataDemoGuiHostApplication {
             create.insertInto(TEMPERATURE, TEMPERATURE.ADDR, TEMPERATURE.TIME, TEMPERATURE.TEMPERATURE_)
                     .values(address, timestamp, value).execute();
 
-//                    Result<Record> result = create.select().from(TEMPERATURE).fetch();
-//                    System.out.println("Read from db:");
-//                    for (Record r : result) {
-//                        String add = r.getValue(TEMPERATURE.ADDR);
-//                        int tm = r.getValue(TEMPERATURE.TIME);
-//                        float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
-//
-//                        System.out.println("address: " + add + " \ttime: " + tm + " \tvalue: " + vl);
-//                    }
         } catch (Exception e) {
             // For the sake of this tutorial, let's keep exception handling simple
             e.printStackTrace();
@@ -272,8 +267,8 @@ public class SendDataDemoGuiHostApplication {
             // For Sqlite
             Class.forName("org.sqlite.JDBC").newInstance();
             conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
-            System.out.println("***** time = " + time);
-            System.out.println("***** conn = " + conn);
+//            System.out.println("***** time = " + time);
+//            System.out.println("***** conn = " + conn);
             DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
             Result<Record> result = create.select().from(TEMPERATURE).where(TEMPERATURE.TIME.equal(time)).fetch();
             System.out.println("Read from db:");

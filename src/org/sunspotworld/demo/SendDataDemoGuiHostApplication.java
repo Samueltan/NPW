@@ -36,8 +36,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.microedition.io.*;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -73,7 +71,6 @@ public class SendDataDemoGuiHostApplication {
     private double real2;
     private ArrayList<Double> test1;
     private ArrayList<Double> test2;
-    
     private ArrayList<String> sensors;
     
     private JTextArea status;
@@ -81,7 +78,6 @@ public class SendDataDemoGuiHostApplication {
     private DataWindow[] plots = new DataWindow[8];
     DateFormat fmt = DateFormat.getTimeInstance();
     double[] average=new double[4];
-    java.sql.Connection conn = null;
 //    DisplayWindow w1;
     //Thread t=new Thread(w1);
     
@@ -105,15 +101,6 @@ public class SendDataDemoGuiHostApplication {
         
         sensors = new ArrayList<String>();
 //        w1=new DisplayWindow();
-        
-        // For database
-        try {
-            // For Sqlite
-            Class.forName("org.sqlite.JDBC").newInstance();
-            conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
-        } catch (Exception ex) {
-            Logger.getLogger(SendDataDemoGuiHostApplication.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     private void setup() {
@@ -180,8 +167,7 @@ public class SendDataDemoGuiHostApplication {
                 // Read sensor sample received over the radio
                 rCon.receive(dg); 
                 String addr = dg.getAddress().substring(15); // Get the last 4 digits
-//                long time = dg.readLong();      // read time of the reading
-                long time = System.currentTimeMillis();
+                long time = dg.readLong();      // read time of the reading
                 double val = dg.readDouble();         // read the sensor value
                 DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String strTime = fmt.format(new Date(time)).toString();
@@ -190,13 +176,14 @@ public class SendDataDemoGuiHostApplication {
                 
                 // Save into database
                 saveToDB(addr, (int)time, (float)val);
-                
+                 
+                DataWindow dw = null;
                 // If use reserved sensors, compare the detected sensor with the reserved list
                 // Only generate graph for the reserved sensors
                 if(useReservedSensors){
 //                    System.out.println("use reserved sensors");
                     if(reservedSensorList.contains(addr)){
-                        DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+                        dw = findPlot(dg.getAddressAsLong(),val,time);
                         dw.addData(time, val);
                         sensors.add(addr);
                     }
@@ -205,10 +192,9 @@ public class SendDataDemoGuiHostApplication {
                     // If donot use reserved sensors, all the detected will be accepted 
                     // (limited by the max_no_of_sensors)
                     if(sensors.contains(addr)){
-                        DataWindow dw = findPlot(dg.getAddressAsLong(),val,time);
+                        dw = findPlot(dg.getAddressAsLong(),val,time);
                         dw.addData(time, val);
                     }else{
-                        DataWindow dw = null;
                         if(sensors.size() < maxNumberOfSensors)
                             dw = findPlot(dg.getAddressAsLong(),val,time);
                             dw.addData(time, val);
@@ -216,11 +202,9 @@ public class SendDataDemoGuiHostApplication {
                         }
                 }
                 
-                // For summary window
-                
-//                float avg = getAverage(time);
-//                DataWindow dw = findPlot(dg.getAddressAsLong(), avg,time);
-//                dw.addData(time, avg);
+//                DataWindow dwGeneric = findPlot(GENERIC_SENSOR_ID,val,time); 
+//                dwGeneric.addData(time, average[3]);
+//                dwGeneric.addData(time, val);
                 
             } catch (Exception e) {
                 System.err.println("Caught " + e +  " while reading sensor samples.");
@@ -230,22 +214,36 @@ public class SendDataDemoGuiHostApplication {
     }
     
     public void saveToDB(String address, int timestamp, float value){
+        java.sql.Connection conn = null;
         try {
+            // For Sqlite
+            Class.forName("org.sqlite.JDBC").newInstance();
+            conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
+
             DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
 
             create.insertInto(TEMPERATURE, TEMPERATURE.ADDR, TEMPERATURE.TIME, TEMPERATURE.TEMPERATURE_)
                     .values(address, timestamp, value).execute();
 
+//                    Result<Record> result = create.select().from(TEMPERATURE).fetch();
+//                    System.out.println("Read from db:");
+//                    for (Record r : result) {
+//                        String add = r.getValue(TEMPERATURE.ADDR);
+//                        int tm = r.getValue(TEMPERATURE.TIME);
+//                        float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
+//
+//                        System.out.println("address: " + add + " \ttime: " + tm + " \tvalue: " + vl);
+//                    }
         } catch (Exception e) {
             // For the sake of this tutorial, let's keep exception handling simple
             e.printStackTrace();
         } finally {
-//            if (conn != null) {
-//                try {
-//                    conn.close();
-//                } catch (SQLException ignore) {
-//                }
-//            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ignore) {
+                }
+            }
         }
     }
     
@@ -264,22 +262,12 @@ public class SendDataDemoGuiHostApplication {
         return result;
     }
     
-     public float getAverage(long time){
-        System.out.println("***** time = " + time);
-        System.out.println("***** conn = " + conn);
-        DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
-        Result<Record> result = create.select().from(TEMPERATURE).where(TEMPERATURE.TIME.equal(time)).fetch();
-        System.out.println("Read from db:");
-        
-        float sum = 0;
-        for (Record r : result) {
-            String add = r.getValue(TEMPERATURE.ADDR);
-            float vl = r.getValue(TEMPERATURE.TEMPERATURE_);
-            sum += vl;
-            System.out.println("address: " + add + " \tvalue: " + vl);
-        }
-        
-        return (sum / result.size());
+     public void getAverage(double val,String addr,long time){
+//        if((sensor1+sensor2+sensor3)==3)
+//        {
+//            average[3]=(average[0] + average[1] + average[2])/(sensor1+sensor2+sensor3);
+//            w1.Window3(average[3],time);
+//        }
     }
      
     /**

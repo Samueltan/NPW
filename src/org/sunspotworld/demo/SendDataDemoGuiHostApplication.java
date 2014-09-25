@@ -188,18 +188,21 @@ public class SendDataDemoGuiHostApplication {
                         sensors.add(addr);
                     }
                 }else{
-                    System.out.println("do not use reserved sensors");
+//                    System.out.println("do not use reserved sensors");
                     // If donot use reserved sensors, all the detected will be accepted 
                     // (limited by the max_no_of_sensors)
                     if(sensors.contains(addr)){
+                        System.out.println("*** contained:");
                         dw = findPlot(dg.getAddressAsLong(),val,time);
                         dw.addData(time, val);
                     }else{
-                        if(sensors.size() < maxNumberOfSensors)
+                        System.out.println("*** not contained: size = " + sensors.size() + ", max = " + maxNumberOfSensors);
+                        if(sensors.size() < maxNumberOfSensors){
                             dw = findPlot(dg.getAddressAsLong(),val,time);
                             dw.addData(time, val);
                             sensors.add(addr);
                         }
+                    }
                 }
                 
 //                DataWindow dwGeneric = findPlot(GENERIC_SENSOR_ID,val,time); 

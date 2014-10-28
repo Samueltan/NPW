@@ -10,21 +10,25 @@ import javax.swing.JFrame;
 
 public class TestGraphics {
     public static void main(String[] args) {
-        new DrawLine();
+        new DrawLocation();
     }
 }
 
-class DrawLine extends JFrame {
+class DrawLocation extends JFrame {
     Point start;
     Point end;
     Container p;
-    public DrawLine() {
+
+    int windowWidth = Constants.CANVAS_WIDTH + 2 * Constants.CANVAS_MARGIN_WIDTH;       // 800 + 2 * 20 = 840
+    int windowHeight = Constants.CANVAS_HEIGHT + 2 * Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_MARGIN_HEIGHT_OFFSET;    // 600 + 2 * 20 + 30 = 670
+    public DrawLocation() {
         p = getContentPane();
         int window_X, window_Y;
 
-        window_X = (Constants.SCREEN_WIDTH - Constants.WINDOW_WIDTH) / 2;
-        window_Y = (Constants.SCREEN_HEIGHT - Constants.WINDOW_HEIGHT) / 2;
-        setBounds(window_X, window_Y, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
+        window_X = (Constants.SCREEN_WIDTH - windowWidth) / 2;      // (1600 - 840)/2 = 380
+        window_Y = (Constants.SCREEN_HEIGHT - windowHeight) / 2;    // (900 - 670)/2 = 115
+        setBounds(window_X, window_Y, windowWidth, windowHeight);   // (380, 110, 840, 670)
+        setTitle("EC544 Challenge 5 - Group #2");
         setVisible(true);
         setLayout(null);
         paintComponents(this.getGraphics());
@@ -33,38 +37,45 @@ class DrawLine extends JFrame {
     }
 
     public void paintComponents(Graphics gg) {
-//        gg.drawLine(10, 100, 200, 400);
+//        gg.DrawLocation(10, 100, 200, 400);
         final Graphics g = gg;
-        final int clear_block_width = 200;       // Repainting area that needs to be cleared to display new location value
-        final int clear_block_height = 12;      // Repainting area that needs to be cleared to display new location value
+
+        // Repainting area that needs to be cleared to display new location value
+        final int clear_block_width = 200;
+        final int clear_block_height = 12;
         start = new Point(0, 80);
         end = new Point(0, 80);
         g.setColor(Color.blue);
         Runnable run = new Runnable() {
             Point temp = null;
-            int x = 0;
+            int x = Constants.CANVAS_MARGIN_WIDTH;
             int y = 200;
             String strLocation;
             boolean outOfScope = false;
 
             public void run() {
                 int d = 1;
+
                 while(true) {
                     try {
-                        System.out.println(x + ", " + y);
-                        if(y>10000){
-                            x = 150;
-                            y = 230;
-                        }
-                        if(x>800 || x<0 || y>600 || y<0) {
+
+                        g.setColor(Color.GRAY);
+                        g.drawRect(Constants.CANVAS_MARGIN_WIDTH, Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_MARGIN_HEIGHT_OFFSET,
+                            Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);       // (20, 20, 800, 600)
+
+                        if(x>windowWidth - Constants.CANVAS_MARGIN_WIDTH || x<Constants.CANVAS_MARGIN_WIDTH
+                                || y>windowHeight - Constants.CANVAS_MARGIN_HEIGHT
+                                || y<Constants.CANVAS_MARGIN_HEIGHT) {
+                            System.out.println(x + ", " + y);
                             g.setColor(Color.RED);
                             strLocation = "Sensor Location: Out of detection scope!";
                             if(!outOfScope)
-                                g.clearRect(Constants.WINDOW_WIDTH / 2 - 8, Constants.WINDOW_HEIGHT - 20, clear_block_width, clear_block_height);
+                                g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
 
-                            g.drawString(strLocation, Constants.WINDOW_WIDTH / 2 - 100, Constants.WINDOW_HEIGHT - 10);
+                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
                             outOfScope = true;
 
+                            break;
                         }else {
                             g.setColor(Color.BLUE);
                             // Show the sensor at the location
@@ -74,15 +85,15 @@ class DrawLine extends JFrame {
 
                             // Update location label
                             strLocation = "Sensor Location: " + x + ", " + y;
-                            g.clearRect(Constants.WINDOW_WIDTH / 2 - 8, Constants.WINDOW_HEIGHT - 20, clear_block_width, clear_block_height);
-                            g.drawString(strLocation, Constants.WINDOW_WIDTH / 2 - 100, Constants.WINDOW_HEIGHT - 10);
+                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
+                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
 
                             // Move to next location
                             start = end;
                             end = temp;
                             outOfScope = false;
-                            Thread.sleep(10);
                         }
+                        Thread.sleep(10);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

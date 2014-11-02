@@ -43,8 +43,8 @@ class DrawLocation extends JFrame {
         // Repainting area that needs to be cleared to display new location value
         final int clear_block_width = 200;
         final int clear_block_height = 12;
-        start = new Point(0, 80);
-        end = new Point(0, 80);
+        start = new Point(Constants.CANVAS_MARGIN_WIDTH, Constants.CANVAS_MARGIN_HEIGHT);
+        end = new Point(Constants.CANVAS_MARGIN_WIDTH, Constants.CANVAS_MARGIN_HEIGHT);
         g.setColor(Color.blue);
         Runnable run = new Runnable() {
             Point temp = null;
@@ -73,7 +73,7 @@ class DrawLocation extends JFrame {
                         g.drawLine(x0, yn, xn, yn);     // draw x axis
                         g.drawLine(x0, y0, x0, yn);     // draw y axis
                         int tickInt = Constants.CANVAS_WIDTH / 10;
-                        for (int xt = x0 + tickInt; xt <= xn; xt += tickInt) {
+                        for (int xt = x0 + tickInt; xt < xn; xt += tickInt) {
                             g.drawLine(xt, yn + 5, xt, yn - 5);
                             int min = (xt - x0) / 1;
                             g.drawString(Integer.toString(min), xt - (min < 10 ? 3 : 7) , yn + 20);
@@ -86,6 +86,18 @@ class DrawLocation extends JFrame {
                             g.drawString(Integer.toString(min), x0 - 32 , yt + 5);
                         }
 
+                        // Show the fixed sensors' locations
+                        drawCenteredCircle(g, x0, yn, 10);
+                        g.drawString("Sensor A", x0 - 30 , yn + 18);
+                        drawCenteredCircle(g, xn, yn, 10);
+                        g.drawString("Sensor B", xn - 30 , yn + 18);
+                        drawCenteredCircle(g, x0, y0, 10);
+                        g.drawString("Sensor C", x0 - 30 , y0 - 10);
+                        drawCenteredCircle(g, xn, y0, 10);
+                        g.drawString("Sensor D", xn - 30 , y0 - 10);
+
+
+                        // Draw the sensor track in real-time mode
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
                         y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
 //                        System.out.println(x + ", " + y);
@@ -128,6 +140,13 @@ class DrawLocation extends JFrame {
             }
         };
         new Thread(run).start();
+    }
+
+    public void drawCenteredCircle(Graphics gg, int x, int y, int r) {
+        gg.setColor(Color.BLUE);
+        x = x-(r/2);
+        y = y-(r/2);
+        gg.fillOval(x,y,r,r);
     }
 
     public boolean isInScope(int x, int y){

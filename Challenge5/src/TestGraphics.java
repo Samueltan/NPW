@@ -87,13 +87,14 @@ class DrawLocation extends JFrame {
                         }
 
                         // Show the fixed sensors' locations
-                        drawCenteredCircle(g, x0, yn, 10);
+                        Color blue = Color.BLUE;
+                        drawCenteredCircle(g, blue, x0, yn, 10);
                         g.drawString("Sensor A", x0 - 30 , yn + 18);
-                        drawCenteredCircle(g, xn, yn, 10);
+                        drawCenteredCircle(g, blue, xn, yn, 10);
                         g.drawString("Sensor B", xn - 30 , yn + 18);
-                        drawCenteredCircle(g, x0, y0, 10);
+                        drawCenteredCircle(g, blue, x0, y0, 10);
                         g.drawString("Sensor C", x0 - 30 , y0 - 10);
-                        drawCenteredCircle(g, xn, y0, 10);
+                        drawCenteredCircle(g, blue, xn, y0, 10);
                         g.drawString("Sensor D", xn - 30 , y0 - 10);
 
 
@@ -118,7 +119,9 @@ class DrawLocation extends JFrame {
                             // Show the sensor at the location
 //                            temp = new Point(x, 60+(int)(40*Math.sin(Math.PI*(x-80)/30)));
                             temp = new Point(x, y);
-                            g.drawLine(start.x, start.y, end.x, end.y);
+//                            g.drawLine(start.x, start.y, end.x, end.y);
+                            g.clearRect(x-5, y-5, 10, 10);
+                            drawCenteredCircle(g, Color.RED, x, y, 8);
 
                             // Update location label
                             strLocation = "Sensor Location: " + x + ", " + y;
@@ -142,8 +145,8 @@ class DrawLocation extends JFrame {
         new Thread(run).start();
     }
 
-    public void drawCenteredCircle(Graphics gg, int x, int y, int r) {
-        gg.setColor(Color.BLUE);
+    public void drawCenteredCircle(Graphics gg, Color color, int x, int y, int r) {
+        gg.setColor(color);
         x = x-(r/2);
         y = y-(r/2);
         gg.fillOval(x,y,r,r);

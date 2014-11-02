@@ -7,7 +7,6 @@ public class Constants {
     final static int CANVAS_WIDTH = 800;
     final static int CANVAS_HEIGHT = 600;
 
-    final static int CANVAS_MARGIN_WIDTH = 20;
-    final static int CANVAS_MARGIN_HEIGHT = 30;
-    final static int CANVAS_MARGIN_HEIGHT_OFFSET = 20;  // Caused by the window title line?
+    final static int CANVAS_MARGIN_WIDTH = 40;
+    final static int CANVAS_MARGIN_HEIGHT = 50;
 }

@@ -19,6 +19,7 @@ public class Trilateration {
     // The distance between the to-be-test sensor and each other location-fixed sensors
     private double r1, r2, r3;
 
+    // Given the 3 sides of the triangle, the location of each vertex will be calculated automated
     public Trilateration(double a, double b, double c){
         this.a = a;
         this.b = b;
@@ -29,6 +30,21 @@ public class Trilateration {
         y2 = 0;
         x3 = (b*b + c*c - a*a) / 2*c;
         y3 = sqrt(b*b - x3 * x3);
+    }
+
+    // Get the location of the vertex A
+    public Location getVertexA(){
+        return new Location(x1, y1);
+    }
+
+    // Get the location of the vertex B
+    public Location getVertexB(){
+        return new Location(x2, y2);
+    }
+
+    // Get the location of the vertex C
+    public Location getVertexC(){
+        return new Location(x3, y3);
     }
 
     // Get the location of the unkonwn position based on the distance to each fixed sensor (A, B, C)

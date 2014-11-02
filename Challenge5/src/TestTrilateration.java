@@ -8,7 +8,7 @@ import java.awt.Graphics;
 import javax.swing.JFrame;
 
 
-public class TestGraphics {
+public class TestTrilateration {
     public static void main(String[] args) {
         new DrawLocation();
     }
@@ -63,37 +63,37 @@ class DrawLocation extends JFrame {
                         y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
 //                        System.out.println(x + ", " + y);
-                        if(!isInScope(x,y)) {
-//                            System.out.println("Not in scope!");
-                            g.setColor(Color.RED);
-                            strLocation = "Sensor Location: Out of detection scope!";
-                            if(!outOfScope)
-                                g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
-
-                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
-                            outOfScope = true;
-
-//                            break;
-                        }else {
-//                            System.out.println("In scope!");
-                            // Show the sensor at the location
-//                            temp = new Point(x, 60+(int)(40*Math.sin(Math.PI*(x-80)/30)));
-                            temp = new Point(x, y);
-//                            g.drawLine(start.x, start.y, end.x, end.y);
-                            cleanCanvas(g);
-                            drawCenteredCircle(g, Color.RED, x, y, 8);
-
-                            // Update location label
-                            g.setColor(Color.BLUE);
-                            strLocation = "Sensor Location: " + x + ", " + y;
-                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
-                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
-
-                            // Move to next location
-                            start = end;
-                            end = temp;
-                            outOfScope = false;
-                        }
+//                        if(!isInScope(x,y)) {
+////                            System.out.println("Not in scope!");
+//                            g.setColor(Color.RED);
+//                            strLocation = "Sensor Location: Out of detection scope!";
+//                            if(!outOfScope)
+//                                g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
+//
+//                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
+//                            outOfScope = true;
+//
+////                            break;
+//                        }else {
+////                            System.out.println("In scope!");
+//                            // Show the sensor at the location
+////                            temp = new Point(x, 60+(int)(40*Math.sin(Math.PI*(x-80)/30)));
+//                            temp = new Point(x, y);
+////                            g.drawLine(start.x, start.y, end.x, end.y);
+//                            cleanCanvas(g);
+//                            drawCenteredCircle(g, Color.RED, x, y, 8);
+//
+//                            // Update location label
+//                            g.setColor(Color.BLUE);
+//                            strLocation = "Sensor Location: " + x + ", " + y;
+//                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
+//                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
+//
+//                            // Move to next location
+//                            start = end;
+//                            end = temp;
+//                            outOfScope = false;
+//                        }
 
                         // Draw the x, y axis
                         g.setColor(Color.GRAY);
@@ -106,20 +106,7 @@ class DrawLocation extends JFrame {
                          *
                          *          A               B
                          */
-                        Point pA, pB, pC, pD;
-                        int x1 = Constants.CANVAS_MARGIN_WIDTH;
-                        int y1 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
-                        int x2 = Constants.CANVAS_MARGIN_WIDTH + Constants.CANVAS_WIDTH;
-                        int y2 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
-                        int x3 = Constants.CANVAS_MARGIN_WIDTH;
-                        int y3 = Constants.CANVAS_MARGIN_HEIGHT;
-                        int x4 = x2;
-                        int y4 = y3;
-                        pA = new Point(x1, y1);
-                        pB = new Point(x2, y2);
-                        pC = new Point(x3, y3);
-                        pD = new Point(x4, y4);
-                        drawFixedSensors(g, pA, pB, pC, pD);
+                        drawFixedSensors(g);
 
                         Thread.sleep(10);
                     } catch (Exception e) {
@@ -158,7 +145,32 @@ class DrawLocation extends JFrame {
         }
     }
 
-    public void drawFixedSensors(Graphics g, Point pointA, Point pointB, Point pointC, Point pointD) {
+    public void drawFixedSensors(Graphics g) {
+        Point pointA, pointB, pointC, pointD;
+//        int x1 = Constants.CANVAS_MARGIN_WIDTH;
+//        int y1 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
+//        int x2 = Constants.CANVAS_MARGIN_WIDTH + Constants.CANVAS_WIDTH;
+//        int y2 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
+//        int x3 = Constants.CANVAS_MARGIN_WIDTH;
+//        int y3 = Constants.CANVAS_MARGIN_HEIGHT;
+//        int x4 = x2;
+//        int y4 = y3;
+
+        Config config = new Config();
+        double a = config.getSideBC();
+        double b = config.getSideAC();
+        double c = config.getSideAB();
+        Trilateration triABC = new Trilateration(a, b, c);
+        pointA = triABC.getVertexA().toPoint();
+        pointB = triABC.getVertexB().toPoint();
+        pointC = triABC.getVertexC().toPoint();
+
+        a = config.getSideDB();
+        b = config.getSideAD();
+        c = config.getSideAB();
+        triABC = new Trilateration(a, b, c);
+        pointD = triABC.getVertexC().toPoint();
+
         Color color = Color.BLUE;
         // Sensor A
         drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
@@ -194,13 +206,5 @@ class DrawLocation extends JFrame {
         return !(x>windowWidth - Constants.CANVAS_MARGIN_WIDTH || x<Constants.CANVAS_MARGIN_WIDTH
                 || y>windowHeight - Constants.CANVAS_MARGIN_HEIGHT
                 || y<Constants.CANVAS_MARGIN_HEIGHT);
-    }
-
-    class Point {
-        int x, y;
-        public Point(int _x, int _y) {
-            x = _x;
-            y = _y;
-        }
     }
 }

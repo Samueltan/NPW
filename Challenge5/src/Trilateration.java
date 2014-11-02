@@ -21,14 +21,14 @@ public class Trilateration {
 
     // Given the 3 sides of the triangle, the location of each vertex will be calculated automated
     public Trilateration(double a, double b, double c){
-        this.a = a;
-        this.b = b;
-        this.c = c;
+        this.a = a;     // a = BC
+        this.b = b;     // b = AC
+        this.c = c;     // c = AB
 
         x1 = y1 = 0;
         x2 = c;
         y2 = 0;
-        x3 = (b*b + c*c - a*a) / 2*c;
+        x3 = (b*b + c*c - a*a) / (2*c);
         y3 = sqrt(b*b - x3 * x3);
     }
 
@@ -76,6 +76,10 @@ public class Trilateration {
 
         public void setY(double y) {
             this.y = y;
+        }
+
+        public Point toPoint(){
+            return new Point((int) x, (int)y);
         }
     }
 }

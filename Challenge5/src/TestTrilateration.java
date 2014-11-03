@@ -83,7 +83,7 @@ class DrawLocation extends JFrame {
                         // Draw the sensor track in real-time mode
                         y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
-//                        System.out.println(x + ", " + y);
+                        System.out.println(x + ", " + y);
 //                        if(!isInScope(x,y)) {
 ////                            System.out.println("Not in scope!");
 //                            g.setColor(Color.RED);
@@ -96,24 +96,24 @@ class DrawLocation extends JFrame {
 //
 ////                            break;
 //                        }else {
-////                            System.out.println("In scope!");
-//                            // Show the sensor at the location
-////                            temp = new Point(x, 60+(int)(40*Math.sin(Math.PI*(x-80)/30)));
-//                            temp = new Point(x, y);
-////                            g.drawLine(start.x, start.y, end.x, end.y);
-//                            cleanCanvas(g);
-//                            drawCenteredCircle(g, Color.RED, x, y, 8);
-//
-//                            // Update location label
-//                            g.setColor(Color.BLUE);
-//                            strLocation = "Sensor Location: " + x + ", " + y;
-//                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
-//                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
-//
-//                            // Move to next location
-//                            start = end;
-//                            end = temp;
-//                            outOfScope = false;
+//                            System.out.println("In scope!");
+                            // Show the sensor at the location
+//                            temp = new Point(x, 60+(int)(40*Math.sin(Math.PI*(x-80)/30)));
+                            temp = new Point(x, y);
+//                            g.drawLine(start.x, start.y, end.x, end.y);
+                            cleanCanvas(g);
+                            drawCenteredCircle(g, Color.RED, x, y, 8);
+
+                            // Update location label
+                            g.setColor(Color.BLUE);
+                            strLocation = "Sensor Location: " + x + ", " + y;
+                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
+                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
+
+                            // Move to next location
+                            start = end;
+                            end = temp;
+                            outOfScope = false;
 //                        }
 
                         // Draw the x, y axis
@@ -129,7 +129,7 @@ class DrawLocation extends JFrame {
                          */
                         drawFixedSensors(g);
 
-                        Thread.sleep(10);
+                        Thread.sleep(100);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -203,17 +203,17 @@ class DrawLocation extends JFrame {
         // Sensor A
         drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
         drawLabel(g, "Sensor A", pointA.x - 30, pointA.y - 20);
-        System.out.println("A: " + pointA.x + ", " + pointA.y);
+//        System.out.println("A: " + pointA.x + ", " + pointA.y);
 
         // Sensor B
         drawCenteredCircle(g, color, pointB.x, pointB.y, 10);
         drawLabel(g, "Sensor B", pointB.x - 30, pointB.y - 20);
-        System.out.println("B: " + pointB.x + ", " + pointB.y);
+//        System.out.println("B: " + pointB.x + ", " + pointB.y);
 
         // Sensor C
         drawCenteredCircle(g, color, pointC.x, pointC.y, 10);
         drawLabel(g, "Sensor C", pointC.x - 30, pointC.y + 10);
-        System.out.println("C: " + pointC.x + ", " + pointC.y);
+//        System.out.println("C: " + pointC.x + ", " + pointC.y);
 
         // Sensor D
         drawCenteredCircle(g, color, pointD.x, pointD.y, 10);
@@ -232,18 +232,18 @@ class DrawLocation extends JFrame {
         x = x-(r/2);
         y = y-(r/2) ;
         gg.fillOval(x,y,r,r);
-        System.out.println("::in canvas:: " + x + ", " + y);
+//        System.out.println("::in canvas:: " + x + ", " + y);
     }
 
     public void cleanCanvas(Graphics gg){
-        int cleanX = Constants.CANVAS_MARGIN_WIDTH + 1;
-        int cleanY = Constants.CANVAS_MARGIN_HEIGHT - 5;
-        gg.clearRect(cleanX, cleanY, Constants.CANVAS_WIDTH, Constants.CANVAS_HEIGHT);
+        int cleanX = Constants.CANVAS_MARGIN_WIDTH + 5;
+        int cleanY = Constants.CANVAS_MARGIN_HEIGHT + 5;
+        gg.clearRect(cleanX, cleanY, Constants.CANVAS_WIDTH + Constants.CANVAS_MARGIN_WIDTH, Constants.CANVAS_HEIGHT - 10);
     }
 
-    public boolean isInScope(int x, int y){
-        return !(x>windowWidth - Constants.CANVAS_MARGIN_WIDTH || x<Constants.CANVAS_MARGIN_WIDTH
-                || y>windowHeight - Constants.CANVAS_MARGIN_HEIGHT
-                || y<Constants.CANVAS_MARGIN_HEIGHT);
-    }
+//    public boolean isInScope(int x, int y){
+//        return !(x>windowWidth - Constants.CANVAS_MARGIN_WIDTH || x<Constants.CANVAS_MARGIN_WIDTH
+//                || y>windowHeight - Constants.CANVAS_MARGIN_HEIGHT
+//                || y<Constants.CANVAS_MARGIN_HEIGHT);
+//    }
 }

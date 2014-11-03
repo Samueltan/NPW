@@ -8,5 +8,5 @@ public class Constants {
     final static int CANVAS_HEIGHT = 600;
 
     final static int CANVAS_MARGIN_WIDTH = 40;
-    final static int CANVAS_MARGIN_HEIGHT = 50;
+    final static int CANVAS_MARGIN_HEIGHT = 60;
 }

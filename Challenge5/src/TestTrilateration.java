@@ -15,8 +15,10 @@ public class TestTrilateration {
 }
 
 class DrawLocation extends JFrame {
-    Point start;
-    Point end;
+    Point start, end;
+    Point pointA, pointB, pointC, pointD;
+    int scaleUnit;
+    double zoomFactor;
     Container p;
 
     int windowWidth = Constants.CANVAS_WIDTH + 2 * Constants.CANVAS_MARGIN_WIDTH;
@@ -34,6 +36,25 @@ class DrawLocation extends JFrame {
         paintComponents(this.getGraphics());
         setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Get the location of 4 sensors
+        Config config = new Config();
+        double a = config.getSideBC();
+        double b = config.getSideAC();
+        double c = config.getSideAB();
+        Trilateration triABC = new Trilateration(a, b, c);
+        pointA = triABC.getVertexA().toPoint();
+        pointB = triABC.getVertexB().toPoint();
+        pointC = triABC.getVertexC().toPoint();
+
+        a = config.getSideDB();
+        b = config.getSideAD();
+        c = config.getSideAB();
+        triABC = new Trilateration(a, b, c);
+        pointD = triABC.getVertexC().toPoint();
+
+        scaleUnit = getScaleUnit(pointB.x);
+        zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_WIDTH;
     }
 
     public void paintComponents(Graphics gg) {
@@ -120,6 +141,24 @@ class DrawLocation extends JFrame {
         new Thread(run).start();
     }
 
+    public int getScaleUnit(int length){
+        int u1 = length / 10;
+        int u2 = length / 9;
+        for(int ii=u1; ii<=u2; ++ii){
+            if(ii%100 == 0) return ii;
+        }
+        for(int ii=u1; ii<=u2; ++ii){
+            if(ii%10 == 0) return ii;
+        }
+        for(int ii=u1; ii<=u2; ++ii){
+            if(ii%5 == 0) return ii;
+        }
+        for(int ii=u1; ii<=u2; ++ii){
+            if(ii%2 == 0) return ii;
+        }
+        return 1;
+    }
+
     public void drawXYAxis(Graphics g){
 
         // x axis: (x0, yn) ~ (xn, yn)
@@ -131,22 +170,25 @@ class DrawLocation extends JFrame {
         g.drawLine(x0, yn, xn, yn);     // draw x axis
         g.drawLine(x0, y0, x0, yn);     // draw y axis
         int tickInt = Constants.CANVAS_WIDTH / 10;
+        int min = 0;
         for (int xt = x0 + tickInt; xt < xn; xt += tickInt) {
             g.drawLine(xt, yn + 5, xt, yn - 5);
-            int min = (xt - x0) / 1;
+//            int min = (xt - x0) * (xLen / Constants.CANVAS_MARGIN_WIDTH);
+            min += scaleUnit;
             g.drawString(Integer.toString(min), xt - (min < 10 ? 3 : 7) , yn + 20);
         }
 
-        tickInt = Constants.CANVAS_HEIGHT / 10;
-        for (int yt = y0 + tickInt; yt < yn; yt += tickInt) {
+//        tickInt = Constants.CANVAS_HEIGHT / 10;
+        min = 0;
+        for (int yt = yn-tickInt; yt > Constants.CANVAS_MARGIN_HEIGHT; yt -= tickInt) {
             g.drawLine(x0 - 5, yt, x0 + 5, yt);
-            int min = (yt - y0) / 1;
+//            int min = (yt - y0) * (yLen / Constants.CANVAS_MARGIN_HEIGHT);
+            min += scaleUnit;
             g.drawString(Integer.toString(min), x0 - 32 , yt + 5);
         }
     }
 
     public void drawFixedSensors(Graphics g) {
-        Point pointA, pointB, pointC, pointD;
 //        int x1 = Constants.CANVAS_MARGIN_WIDTH;
 //        int y1 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
 //        int x2 = Constants.CANVAS_MARGIN_WIDTH + Constants.CANVAS_WIDTH;
@@ -156,44 +198,41 @@ class DrawLocation extends JFrame {
 //        int x4 = x2;
 //        int y4 = y3;
 
-        Config config = new Config();
-        double a = config.getSideBC();
-        double b = config.getSideAC();
-        double c = config.getSideAB();
-        Trilateration triABC = new Trilateration(a, b, c);
-        pointA = triABC.getVertexA().toPoint();
-        pointB = triABC.getVertexB().toPoint();
-        pointC = triABC.getVertexC().toPoint();
-
-        a = config.getSideDB();
-        b = config.getSideAD();
-        c = config.getSideAB();
-        triABC = new Trilateration(a, b, c);
-        pointD = triABC.getVertexC().toPoint();
-
         Color color = Color.BLUE;
+//        drawCenteredCircle(g, color, 200, 200, 10);
         // Sensor A
         drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
-        g.drawString("Sensor A", pointA.x - 30, pointA.y + 18);
+        drawLabel(g, "Sensor A", pointA.x - 30, pointA.y - 20);
+        System.out.println("A: " + pointA.x + ", " + pointA.y);
 
         // Sensor B
         drawCenteredCircle(g, color, pointB.x, pointB.y, 10);
-        g.drawString("Sensor B", pointB.x - 30, pointB.y + 18);
+        drawLabel(g, "Sensor B", pointB.x - 30, pointB.y - 20);
+        System.out.println("B: " + pointB.x + ", " + pointB.y);
 
         // Sensor C
         drawCenteredCircle(g, color, pointC.x, pointC.y, 10);
-        g.drawString("Sensor C", pointC.x - 30, pointC.y - 10);
+        drawLabel(g, "Sensor C", pointC.x - 30, pointC.y + 10);
+        System.out.println("C: " + pointC.x + ", " + pointC.y);
 
         // Sensor D
         drawCenteredCircle(g, color, pointD.x, pointD.y, 10);
-        g.drawString("Sensor D", pointD.x - 30, pointD.y - 10);
+        drawLabel(g, "Sensor D", pointD.x - 30, pointD.y + 10);
+    }
+
+    public void drawLabel(Graphics gg, String txt, int x, int y){
+        gg.drawString(txt, (int)(x/zoomFactor) + Constants.CANVAS_MARGIN_WIDTH,
+                Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT - (int)(y/zoomFactor));
     }
 
     public void drawCenteredCircle(Graphics gg, Color color, int x, int y, int r) {
         gg.setColor(color);
+        x = (int)(x/zoomFactor) + Constants.CANVAS_MARGIN_WIDTH;
+        y = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT - (int)(y/zoomFactor);
         x = x-(r/2);
-        y = y-(r/2);
+        y = y-(r/2) ;
         gg.fillOval(x,y,r,r);
+        System.out.println("::in canvas:: " + x + ", " + y);
     }
 
     public void cleanCanvas(Graphics gg){

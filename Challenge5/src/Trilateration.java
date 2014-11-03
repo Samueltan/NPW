@@ -54,32 +54,4 @@ public class Trilateration {
         y = (r1 * r1 - r3 * r3 + b*b - 2 * x * x3) / (2 * y3);
         return new Location(x, y);
     }
-
-    class Location{
-        double x, y;
-        public Location(double x, double y){
-            this.x = x;
-            this.y = y;
-        }
-
-        public double getX() {
-            return x;
-        }
-
-        public void setX(double x) {
-            this.x = x;
-        }
-
-        public double getY() {
-            return y;
-        }
-
-        public void setY(double y) {
-            this.y = y;
-        }
-
-        public Point toPoint(){
-            return new Point((int) x, (int)y);
-        }
-    }
 }

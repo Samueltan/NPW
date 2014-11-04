@@ -48,7 +48,7 @@ public class DBUtil {
         }
     }
 
-    public TripleR getSensorLocation(String address, long time){
+    public TripleR getSensorTripleR(String address, long time){
         Result<Record> result = null;
         TripleR tr = null;
         try {

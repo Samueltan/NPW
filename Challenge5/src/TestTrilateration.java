@@ -39,9 +39,6 @@ class DrawLocation extends JFrame {
         setTitle("EC544 Challenge 5 - Group #2");
         setVisible(true);
         setLayout(null);
-        paintComponents(this.getGraphics());
-        setResizable(false);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Get the location of 4 sensors
         Config config = new Config();
@@ -51,6 +48,10 @@ class DrawLocation extends JFrame {
 
         scaleUnit = getScaleUnit(config.getMaxscale());
         zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_HEIGHT;
+
+        paintComponents(this.getGraphics());
+        setResizable(false);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public void paintComponents(Graphics gg) {
@@ -93,22 +94,21 @@ class DrawLocation extends JFrame {
                         y = (int)xy.getY();
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
-//                        System.out.println(x + ", " + y);
-                            temp = new Point(x, y);
-                            cleanCanvas(g);
-                            drawCenteredCircle(g, Color.RED, x, y, 8);
+//                        System.out.println("********" + x + ", " + y);
+                        temp = new Point(x, y);
+                        cleanCanvas(g);
+                        drawCenteredCircle(g, Color.RED, x, y, 8);
 
-                            // Update location label
-                            g.setColor(Color.BLUE);
-                            strLocation = "Sensor Location: " + x + ", " + y;
-                            g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
-                            g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
+                        // Update location label
+                        g.setColor(Color.BLUE);
+                        strLocation = "Sensor Location: " + x + ", " + y;
+                        g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
+                        g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
 
-                            // Move to next location
-                            start = end;
-                            end = temp;
-                            outOfScope = false;
-//                        }
+                        // Move to next location
+                        start = end;
+                        end = temp;
+                        outOfScope = false;
 
                         // Draw the x, y axis
                         g.setColor(Color.GRAY);
@@ -224,8 +224,10 @@ class DrawLocation extends JFrame {
     }
 
     public boolean isInScope(int x, int y){
-        return !(x>windowWidth || x<35
-                || y>windowHeight
-                || y<35);
+        int xx = (int)(x/zoomFactor) + Constants.CANVAS_MARGIN_WIDTH;
+        int yy = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT - (int)(y/zoomFactor);
+        return !(xx>windowWidth || xx<55
+                || yy>windowHeight
+                || yy<55);
     }
 }

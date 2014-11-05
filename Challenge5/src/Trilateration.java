@@ -42,34 +42,6 @@ public class Trilateration {
         this.y3 = y3;
     }
 
-    // Given the 3 sides of the triangle, the location of each vertex will be calculated automated
-//    public Trilateration(double a, double b, double c){
-//        this.a = a;     // a = BC
-//        this.b = b;     // b = AC
-//        this.c = c;     // c = AB
-//
-//        x1 = y1 = 0;
-//        x2 = c;
-//        y2 = 0;
-//        x3 = (b*b + c*c - a*a) / (2*c);
-//        y3 = sqrt(b*b - x3 * x3);
-//    }
-
-//    // Get the location of the vertex A
-//    public Location getVertexA(){
-//        return new Location(x1, y1);
-//    }
-//
-//    // Get the location of the vertex B
-//    public Location getVertexB(){
-//        return new Location(x2, y2);
-//    }
-//
-//    // Get the location of the vertex C
-//    public Location getVertexC(){
-//        return new Location(x3, y3);
-//    }
-
     // Get the location of the unkonwn position based on the distance to each fixed sensor (A, B, C)
     public Location getLocationFromDistance(double r1, double r2, double r3){
         double x, y;
@@ -88,8 +60,9 @@ public class Trilateration {
         double _y1 = -k*_x1 + y1 - m;
         double _y2 = -k*_x2 + y1 - m;
         double errRange1 = abs((x3 - _x1) * (x3 - _x1) + (y3 - _y1) * (y3 - _y1) - r3 * r3);
-        double errRange2 = abs((x3 - _x1) * (x3 - _x1) + (y3 - _y1) * (y3 - _y1)  - r3 * r3);
+        double errRange2 = abs((x3 - _x2) * (x3 - _x2) + (y3 - _y2) * (y3 - _y2) - r3 * r3);
 
+//        System.out.println("("+x1+","+y1+")" + "("+x2+","+y2+")" + "("+x3+","+y3+")");
         if(errRange1 < errRange2){
             x = _x1;
             y = _y1;
@@ -98,10 +71,10 @@ public class Trilateration {
             y = _y2;
         }
 
-        System.out.println("*** _x1, _y1 = " + _x1 + ", " + _y1);
-        System.out.println("*** _x2, _y2 = " + _x2 + ", " + _y2);
-        System.out.println("*** err1 = " + errRange1);
-        System.out.println("*** err2 = " + errRange2);
+//        System.out.println("*** _x1, _y1 = " + _x1 + ", " + _y1);
+//        System.out.println("*** _x2, _y2 = " + _x2 + ", " + _y2);
+//        System.out.println("*** err1 = " + errRange1);
+//        System.out.println("*** err2 = " + errRange2);
         return new Location(x, y);
     }
 }

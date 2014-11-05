@@ -7,6 +7,7 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -14,30 +15,29 @@ import java.util.Properties;
  * @author samueltango
  */
 public class Config {
-    private int sideAB;
-    private int sideAC;
-    private int sideBC;
-    private int sideAD;
-    private int sideDB;
+    HashMap<String, Point> sensorPoints;
+    int numofsensors;
+    int xscale;
 
     public Config(){
         Properties prop = new Properties();
+        sensorPoints = new HashMap<String, Point>();
         InputStream input = null;
 
         try {
-                input = new FileInputStream("config.properties");
+            input = new FileInputStream("config.properties");
 
-                // load the settings.properties file
-                prop.load(input);
+            // load the settings.properties file
+            prop.load(input);
+            numofsensors = Integer.parseInt(prop.getProperty("num_of_sensors"));
+            Point pt = null;
+            for(int i=1; i<=numofsensors; ++i){
+                pt = new Point( Integer.parseInt(prop.getProperty("x" + i)),  Integer.parseInt(prop.getProperty("y" + i)));
+                sensorPoints.put(prop.getProperty("addr" + i), pt);
+                if(2==i) xscale = pt.x;
+            }
 
-                // get the property value and print it out
-                sideAB = Integer.parseInt(prop.getProperty("AB"));
-                sideAC = Integer.parseInt(prop.getProperty("AC"));
-                sideBC = Integer.parseInt(prop.getProperty("BC"));
-                sideAD = Integer.parseInt(prop.getProperty("AD"));
-                sideDB = Integer.parseInt(prop.getProperty("DB"));
-
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         } finally {
             if (input != null) {
@@ -50,23 +50,15 @@ public class Config {
         }
     }
 
-    public int getSideAB() {
-        return sideAB;
+    public HashMap<String, Point> getSensorPoints() {
+        return sensorPoints;
     }
 
-    public int getSideAC() {
-        return sideAC;
+    public int getNumofsensors() {
+        return numofsensors;
     }
 
-    public int getSideBC() {
-        return sideBC;
-    }
-
-    public int getSideAD() {
-        return sideAD;
-    }
-
-    public int getSideDB() {
-        return sideDB;
+    public int getXscale() {
+        return xscale;
     }
 }

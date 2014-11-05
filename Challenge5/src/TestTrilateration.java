@@ -4,6 +4,8 @@
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFrame;
 
@@ -16,12 +18,14 @@ public class TestTrilateration {
 
 class DrawLocation extends JFrame {
     Point start, end;
-    Point pointA, pointB, pointC, pointD;
-    Trilateration triABC;
-    Trilateration triABD;
+    HashMap<String, Point> sensorPoints;
+    ArrayList<String> sensorAddrs;
+//    Trilateration tri1, tri2;
+//    Trilateration triABC, triABD, triABE, triABF;
     int scaleUnit;
     double zoomFactor;
     Container p;
+    int numOfSensors;
 
     int windowWidth = Constants.CANVAS_WIDTH + 2 * Constants.CANVAS_MARGIN_WIDTH;
     int windowHeight = Constants.CANVAS_HEIGHT + 2 * Constants.CANVAS_MARGIN_HEIGHT;
@@ -41,21 +45,11 @@ class DrawLocation extends JFrame {
 
         // Get the location of 4 sensors
         Config config = new Config();
-        double a = config.getSideBC();
-        double b = config.getSideAC();
-        double c = config.getSideAB();
-        triABC = new Trilateration(a, b, c);
-        pointA = triABC.getVertexA().toPoint();
-        pointB = triABC.getVertexB().toPoint();
-        pointC = triABC.getVertexC().toPoint();
+        numOfSensors = config.getNumofsensors();
+        sensorPoints = config.getSensorPoints();
+        sensorAddrs = new ArrayList<String>(sensorPoints.keySet());
 
-        a = config.getSideDB();
-        b = config.getSideAD();
-        c = config.getSideAB();
-        triABD = new Trilateration(a, b, c);
-        pointD = triABD.getVertexC().toPoint();
-
-        scaleUnit = getScaleUnit(pointB.x);
+        scaleUnit = getScaleUnit(config.getXscale());
         zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_WIDTH;
     }
 
@@ -76,31 +70,30 @@ class DrawLocation extends JFrame {
             String strLocation;
             boolean outOfScope = false;
 
-            DBUtil dbutil = new DBUtil();
-            DBUtil.TripleR tr;
-
             public void run() {
                 int d = 1;
                 int i = 0;
                 Location xy;
 
+                Trilateration tri = null;
                 while(true) {
                     try {
                         long time = System.currentTimeMillis();
 
+                        tri = getTrilateration("80F5", "45BB", "79B0");
                         // Get the sensor location
                         float r1 = 500;
                         float r2 = 500 + i;
                         float r3 = 500 - i;
 //                        dbutil.saveDistances("b544", Long.toString(time), r1, r2, r3);
-                        xy = triABC.getLocationFromDistance(r1, r2, r3);
+                        xy = tri.getLocationFromDistance(r1, r2, r3);
 
                         // Draw the sensor track in real-time mode
                         x = (int)xy.getX();
                         y = (int)xy.getY();
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
 //                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
-                        System.out.println(x + ", " + y);
+//                        System.out.println(x + ", " + y);
                             temp = new Point(x, y);
                             cleanCanvas(g);
                             drawCenteredCircle(g, Color.RED, x, y, 8);
@@ -141,6 +134,14 @@ class DrawLocation extends JFrame {
             }
         };
         new Thread(run).start();
+    }
+
+    public Trilateration getTrilateration(String addr1, String addr2, String addr3){
+        Point pA, pB, pC;
+        pA = sensorPoints.get(addr1);
+        pB = sensorPoints.get(addr2);
+        pC = sensorPoints.get(addr3);
+        return new Trilateration(pA.x, pA.y, pB.x, pB.y, pC.x, pC.y);
     }
 
     public int getScaleUnit(int length){
@@ -202,21 +203,27 @@ class DrawLocation extends JFrame {
 
         Color color = Color.BLUE;
 //        drawCenteredCircle(g, color, 200, 200, 10);
-        // Sensor A
-        drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
-        drawLabel(g, "Sensor A", pointA.x - 30, pointA.y - 20);
+//        // Sensor A
+//        drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
+//        drawLabel(g, "Sensor A", pointA.x - 30, pointA.y - 20);
+//
+//        // Sensor B
+//        drawCenteredCircle(g, color, pointB.x, pointB.y, 10);
+//        drawLabel(g, "Sensor B", pointB.x - 30, pointB.y - 20);
+//
+//        // Sensor C
+//        drawCenteredCircle(g, color, pointC.x, pointC.y, 10);
+//        drawLabel(g, "Sensor C", pointC.x - 30, pointC.y + 10);
+//
+//        // Sensor D
+//        drawCenteredCircle(g, color, pointD.x, pointD.y, 10);
+//        drawLabel(g, "Sensor D", pointD.x - 30, pointD.y + 10);
 
-        // Sensor B
-        drawCenteredCircle(g, color, pointB.x, pointB.y, 10);
-        drawLabel(g, "Sensor B", pointB.x - 30, pointB.y - 20);
-
-        // Sensor C
-        drawCenteredCircle(g, color, pointC.x, pointC.y, 10);
-        drawLabel(g, "Sensor C", pointC.x - 30, pointC.y + 10);
-
-        // Sensor D
-        drawCenteredCircle(g, color, pointD.x, pointD.y, 10);
-        drawLabel(g, "Sensor D", pointD.x - 30, pointD.y + 10);
+        for(String key:sensorPoints.keySet()){
+            Point pt = sensorPoints.get(key);
+            drawCenteredCircle(g, color, pt.x, pt.y, 10);
+            drawLabel(g, key, pt.x - 30, pt.y - 20);
+        }
     }
 
     public void drawLabel(Graphics gg, String txt, int x, int y){

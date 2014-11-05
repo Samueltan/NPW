@@ -49,8 +49,8 @@ class DrawLocation extends JFrame {
         sensorPoints = config.getSensorPoints();
         sensorAddrs = new ArrayList<String>(sensorPoints.keySet());
 
-        scaleUnit = getScaleUnit(config.getXscale());
-        zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_WIDTH;
+        scaleUnit = getScaleUnit(config.getMaxscale());
+        zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_HEIGHT;
     }
 
     public void paintComponents(Graphics gg) {
@@ -82,9 +82,9 @@ class DrawLocation extends JFrame {
 
                         tri = getTrilateration("80F5", "45BB", "79B0");
                         // Get the sensor location
-                        float r1 = 500;
-                        float r2 = 500 + i;
-                        float r3 = 500 - i;
+                        float r1 = 740;
+                        float r2 = 710 + i;
+                        float r3 = 505 - i;
 //                        dbutil.saveDistances("b544", Long.toString(time), r1, r2, r3);
                         xy = tri.getLocationFromDistance(r1, r2, r3);
 
@@ -172,7 +172,7 @@ class DrawLocation extends JFrame {
         int yn = y0 + Constants.CANVAS_HEIGHT;
         g.drawLine(x0, yn, xn, yn);     // draw x axis
         g.drawLine(x0, y0, x0, yn);     // draw y axis
-        int tickInt = Constants.CANVAS_WIDTH / 10;
+        int tickInt = Constants.CANVAS_HEIGHT / 10;
         int min = 0;
         for (int xt = x0 + tickInt; xt < xn; xt += tickInt) {
             g.drawLine(xt, yn + 5, xt, yn - 5);
@@ -192,37 +192,14 @@ class DrawLocation extends JFrame {
     }
 
     public void drawFixedSensors(Graphics g) {
-//        int x1 = Constants.CANVAS_MARGIN_WIDTH;
-//        int y1 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
-//        int x2 = Constants.CANVAS_MARGIN_WIDTH + Constants.CANVAS_WIDTH;
-//        int y2 = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT;
-//        int x3 = Constants.CANVAS_MARGIN_WIDTH;
-//        int y3 = Constants.CANVAS_MARGIN_HEIGHT;
-//        int x4 = x2;
-//        int y4 = y3;
 
         Color color = Color.BLUE;
-//        drawCenteredCircle(g, color, 200, 200, 10);
-//        // Sensor A
-//        drawCenteredCircle(g, color, pointA.x, pointA.y, 10);
-//        drawLabel(g, "Sensor A", pointA.x - 30, pointA.y - 20);
-//
-//        // Sensor B
-//        drawCenteredCircle(g, color, pointB.x, pointB.y, 10);
-//        drawLabel(g, "Sensor B", pointB.x - 30, pointB.y - 20);
-//
-//        // Sensor C
-//        drawCenteredCircle(g, color, pointC.x, pointC.y, 10);
-//        drawLabel(g, "Sensor C", pointC.x - 30, pointC.y + 10);
-//
-//        // Sensor D
-//        drawCenteredCircle(g, color, pointD.x, pointD.y, 10);
-//        drawLabel(g, "Sensor D", pointD.x - 30, pointD.y + 10);
 
         for(String key:sensorPoints.keySet()){
             Point pt = sensorPoints.get(key);
             drawCenteredCircle(g, color, pt.x, pt.y, 10);
-            drawLabel(g, key, pt.x - 30, pt.y - 20);
+            String label = key + "(" + pt.x + ", " + pt.y + ")";
+            drawLabel(g, label, pt.x - 30, pt.y + 30);
         }
     }
 
@@ -247,8 +224,8 @@ class DrawLocation extends JFrame {
     }
 
     public boolean isInScope(int x, int y){
-        return !(x>windowWidth || x<15
+        return !(x>windowWidth || x<35
                 || y>windowHeight
-                || y<15);
+                || y<35);
     }
 }

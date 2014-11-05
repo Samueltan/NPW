@@ -10,6 +10,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+
 /**
  *
  * @author samueltango
@@ -17,7 +20,7 @@ import java.util.Properties;
 public class Config {
     HashMap<String, Point> sensorPoints;
     int numofsensors;
-    int xscale;
+    int maxScale;
 
     public Config(){
         Properties prop = new Properties();
@@ -27,6 +30,7 @@ public class Config {
         try {
             input = new FileInputStream("config.properties");
 
+            maxScale = 0;
             // load the settings.properties file
             prop.load(input);
             numofsensors = Integer.parseInt(prop.getProperty("num_of_sensors"));
@@ -34,7 +38,8 @@ public class Config {
             for(int i=1; i<=numofsensors; ++i){
                 pt = new Point( Integer.parseInt(prop.getProperty("x" + i)),  Integer.parseInt(prop.getProperty("y" + i)));
                 sensorPoints.put(prop.getProperty("addr" + i), pt);
-                if(2==i) xscale = pt.x;
+                int tmpMax = max(abs(pt.x), abs(pt.y));
+                if(tmpMax > maxScale) maxScale = tmpMax;
             }
 
         } catch (Exception ex) {
@@ -58,7 +63,7 @@ public class Config {
         return numofsensors;
     }
 
-    public int getXscale() {
-        return xscale;
+    public int getMaxscale() {
+        return maxScale;
     }
 }

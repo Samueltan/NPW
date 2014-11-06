@@ -20,7 +20,7 @@ import static java.lang.Math.max;
 public class Config {
     HashMap<String, Point> sensorPoints;
     int numofsensors;
-    int maxScale;
+    int maxScale, xMax, yMax;
 
     public Config(){
         Properties prop = new Properties();
@@ -30,7 +30,7 @@ public class Config {
         try {
             input = new FileInputStream("config.properties");
 
-            maxScale = 0;
+            maxScale = xMax = yMax = 0;
             // load the settings.properties file
             prop.load(input);
             numofsensors = Integer.parseInt(prop.getProperty("num_of_sensors"));
@@ -38,6 +38,9 @@ public class Config {
             for(int i=1; i<=numofsensors; ++i){
                 pt = new Point( Integer.parseInt(prop.getProperty("x" + i)),  Integer.parseInt(prop.getProperty("y" + i)));
                 sensorPoints.put(prop.getProperty("addr" + i), pt);
+                if(abs(pt.x)>xMax) xMax = abs(pt.x);
+                if(abs(pt.y)>yMax) yMax = abs(pt.y);
+
                 int tmpMax = max(abs(pt.x), abs(pt.y));
                 if(tmpMax > maxScale) maxScale = tmpMax;
             }
@@ -65,5 +68,13 @@ public class Config {
 
     public int getMaxscale() {
         return maxScale;
+    }
+
+    public int getxMax() {
+        return xMax;
+    }
+
+    public int getyMax() {
+        return yMax;
     }
 }

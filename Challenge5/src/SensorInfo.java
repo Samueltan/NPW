@@ -5,6 +5,11 @@ public class SensorInfo {
     String addr;
     double distance;
 
+    public SensorInfo(String addr, double distance) {
+        this.addr = addr;
+        this.distance = distance;
+    }
+
     public String getAddr() {
         return addr;
     }

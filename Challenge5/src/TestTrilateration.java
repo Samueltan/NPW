@@ -20,9 +20,8 @@ class DrawLocation extends JFrame {
     Point start, end;
     HashMap<String, Point> sensorPoints;
     ArrayList<String> sensorAddrs;
-//    Trilateration tri1, tri2;
-//    Trilateration triABC, triABD, triABE, triABF;
     int scaleUnit;
+    int xMax, yMax;
     double zoomFactor;
     Container p;
     int numOfSensors;
@@ -47,6 +46,8 @@ class DrawLocation extends JFrame {
         sensorAddrs = new ArrayList<String>(sensorPoints.keySet());
 
         scaleUnit = getScaleUnit(config.getMaxscale());
+        xMax = config.getxMax();
+        yMax = config.getyMax();
         zoomFactor = 10.0 * scaleUnit / Constants.CANVAS_HEIGHT;
 
         paintComponents(this.getGraphics());
@@ -66,6 +67,7 @@ class DrawLocation extends JFrame {
         g.setColor(Color.blue);
         Runnable run = new Runnable() {
             Point temp = null;
+            SensorInfo si1, si2, si3;
             int x = Constants.CANVAS_MARGIN_WIDTH;
             int y;
             String strLocation;
@@ -80,14 +82,16 @@ class DrawLocation extends JFrame {
                 while(true) {
                     try {
                         long time = System.currentTimeMillis();
-
-                        tri = getTrilateration("80F5", "45BB", "79B0");
-                        // Get the sensor location
                         float r1 = 740;
                         float r2 = 710 + i;
                         float r3 = 505 - i;
-//                        dbutil.saveDistances("b544", Long.toString(time), r1, r2, r3);
-                        xy = tri.getLocationFromDistance(r1, r2, r3);
+                        si1 = new SensorInfo("80F5", r1);
+                        si2 = new SensorInfo("45BB", r2);
+                        si3 = new SensorInfo("79B0", r3);
+
+                        tri = getTrilateration(si1.getAddr(), si2.getAddr(), si3.getAddr());
+                        // Get the sensor location
+                        xy = tri.getLocationFromDistance(si1.getDistance(), si2.getDistance(), si3.getDistance());
 
                         // Draw the sensor track in real-time mode
                         x = (int)xy.getX();
@@ -97,11 +101,16 @@ class DrawLocation extends JFrame {
 //                        System.out.println("********" + x + ", " + y);
                         temp = new Point(x, y);
                         cleanCanvas(g);
-                        drawCenteredCircle(g, Color.RED, x, y, 8);
 
                         // Update location label
-                        g.setColor(Color.BLUE);
-                        strLocation = "Sensor Location: " + x + ", " + y;
+                        if(isInScope(x,y)) {
+                            drawCenteredCircle(g, Color.RED, x, y, 8);
+                            g.setColor(Color.BLUE);
+                            strLocation = "Sensor Location: " + x + ", " + y;
+                        }else{
+                            g.setColor(Color.RED);
+                            strLocation = "Sensor Location: Out of scope!";
+                        }
                         g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
                         g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);
 
@@ -129,11 +138,17 @@ class DrawLocation extends JFrame {
                     }
 //                    x += d;
                     ++i;
-                    if(!isInScope(x,y)) i=0;
                 }
             }
         };
         new Thread(run).start();
+    }
+
+    public Bilateration getBilateration(String addr1, String addr2){
+        Point pA, pB;
+        pA = sensorPoints.get(addr1);
+        pB = sensorPoints.get(addr2);
+        return new Bilateration(pA.x, pA.y, pB.x, pB.y);
     }
 
     public Trilateration getTrilateration(String addr1, String addr2, String addr3){
@@ -224,10 +239,6 @@ class DrawLocation extends JFrame {
     }
 
     public boolean isInScope(int x, int y){
-        int xx = (int)(x/zoomFactor) + Constants.CANVAS_MARGIN_WIDTH;
-        int yy = Constants.CANVAS_MARGIN_HEIGHT + Constants.CANVAS_HEIGHT - (int)(y/zoomFactor);
-        return !(xx>windowWidth || xx<55
-                || yy>windowHeight
-                || yy<55);
+        return !(x<30 || x>xMax || y<30 || y>yMax);
     }
 }

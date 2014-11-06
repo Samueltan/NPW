@@ -1,4 +1,4 @@
-import org.jooq.util.derby.sys.Sys;
+//import org.jooq.util.derby.sys.Sys;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
@@ -21,16 +21,6 @@ public class Trilateration {
 
     // The distance between the to-be-test sensor and each other location-fixed sensors
     private double r1, r2, r3;
-
-    // If A is (0,0) and B is (x2,0)
-    // A (0,0), B(x2,0), C(x3, y3)
-    public Trilateration(double x2, double x3, double y3){
-        this.x1 = this.y1 = 0;
-        this.x2 = x2;
-        this.y2 = 0;
-        this.x3 = x3;
-        this.y3 = y3;
-    }
 
     // Generic situation (based on location)
     public Trilateration(double x1, double y1, double x2, double y2, double x3, double y3){

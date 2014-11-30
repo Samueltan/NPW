@@ -18,6 +18,43 @@ import java.util.Date;
  */
 public class HelloWorldServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    java.sql.Connection conn = null;
+    DSLContext create = null;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+
+        // Database initialization
+        // For Mysql
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        create = DSL.using(conn, SQLDialect.MYSQL);
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException ignore) {
+            }
+        }
+    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -62,26 +99,13 @@ public class HelloWorldServlet extends HttpServlet {
     public void saveToDB(String address, String timestamp, int dr, int cx){
         System.out.println("Entering saveToDB()...");
 
-        java.sql.Connection conn = null;
         try {
-            // For Sqlite
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
-
-            DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
             create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
                     Location.LOCATION.DISTANCER, Location.LOCATION.CENTERX)
                     .values(address, timestamp, dr, cx).execute();
 
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ignore) {
-                }
-            }
         }
         System.out.println("Exiting saveToDB()...");
     }

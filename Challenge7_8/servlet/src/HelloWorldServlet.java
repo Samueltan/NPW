@@ -14,6 +14,8 @@ public class HelloWorldServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Entering doPost()...");
+
         FileWriter fw = new FileWriter("C:/temp/hello.log", true);
         BufferedWriter bw = new BufferedWriter(fw);
 
@@ -41,5 +43,7 @@ public class HelloWorldServlet extends HttpServlet {
         pw.flush();
         pw.close();
         bw.close();
+
+        System.out.println("Exiting doPost()...");
     }
 }

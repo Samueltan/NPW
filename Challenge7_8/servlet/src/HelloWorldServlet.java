@@ -45,7 +45,10 @@ public class HelloWorldServlet extends HttpServlet {
         bw.newLine();
         bw.flush();
 
-        saveToDB("FFFF", Long.toString(System.currentTimeMillis()), 113, 267);
+        int distanceR = (int) (1473 + Math.random() * 1000);
+        int centerX = (int) (296 + Math.random() * 100);
+
+        saveToDB("FFFF", Long.toString(System.currentTimeMillis()), distanceR, centerX);
 
         PrintWriter pw = resp.getWriter();
         pw.println("<html><head><title>Hi</title></head><body>Hello world!!!!!  See hello.log.</body></html>");
@@ -65,22 +68,12 @@ public class HelloWorldServlet extends HttpServlet {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
 
-            System.out.println("Dummy db operation **********  1  ********** ...");
-
             DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
-
-            System.out.println("Dummy db operation **********  2  ********** ...");
-
-//            create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
-//                    Location.LOCATION.DISTANCER, Location.LOCATION.CENTERX)
-//                    .values(address, timestamp, dr, cx).execute();
+            create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
+                    Location.LOCATION.DISTANCER, Location.LOCATION.CENTERX)
+                    .values(address, timestamp, dr, cx).execute();
 
         } catch (Exception e) {
-            // For the sake of this tutorial, let's keep exception handling simple
-            System.out.println("Dummy db operation **********  3  ********** ...");
-
-            System.out.println(e.getMessage());
-
             e.printStackTrace();
         } finally {
             if (conn != null) {

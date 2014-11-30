@@ -1,6 +1,8 @@
 /**
  * Created by Samuel on 2014/10/27.
  */
+package org.sunspotworld;
+
 public class Constants {
     final static int SCREEN_WIDTH = 1600;
     final static int SCREEN_HEIGHT = 900;

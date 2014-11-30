@@ -85,9 +85,9 @@ class DrawLocation extends JFrame {
                         float r1 = 740;
                         float r2 = 710 + i;
                         float r3 = 505 - i;
-                        si1 = new SensorInfo("79B0", 684);
-                        si2 = new SensorInfo("78FB", 564);
-                        si3 = new SensorInfo("45BB", 593);
+                        si1 = new SensorInfo("80F5", r1);
+                        si2 = new SensorInfo("45BB", r2);
+                        si3 = new SensorInfo("79B0", r3);
 
                         tri = getTrilateration(si1.getAddr(), si2.getAddr(), si3.getAddr());
                         // Get the sensor location

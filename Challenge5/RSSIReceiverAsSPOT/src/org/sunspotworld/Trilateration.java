@@ -1,7 +1,7 @@
 //import org.jooq.util.derby.sys.Sys;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.sqrt;
+import java.lang.Math.abs;
+import java.lang.Math.sqrt;
 
 /**
  * Created by Samuel on 2014/10/27.
@@ -39,7 +39,6 @@ public class Trilateration {
 ////        y = (r1 * r1 - r3 * r3 + b*b - 2 * x * x3) / (2 * y3);
 //        y = (r1 * r1 - r3 * r3 - x * x + (x - x3)*(x - x3) + y3 * y3) / (2 * y3);
 
-        if(y1==y2) ++y1;
         double k = (x1 - x2) / (y1 - y2);
         double m = y1 - (x1*x1 - x2*x2 + y1*y1 - y2*y2 - r1*r1 + r2*r2)/(2 *(y1 -y2));
         double aa = k*k + 1;

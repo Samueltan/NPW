@@ -1,6 +1,7 @@
 /**
  * Created by Samuel on 2014/10/27.
  */
+package org.sunspotworld;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
@@ -8,15 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
+import org.sunspotworld.SensorInfo;
 
-
-public class TestTrilateration {
-    public static void main(String[] args) {
-        new DrawLocation();
-    }
-}
-
-class DrawLocation extends JFrame {
+public class DrawLocation extends JFrame {
     Point start, end;
     HashMap<String, Point> sensorPoints;
     ArrayList<String> sensorAddrs;
@@ -25,6 +20,7 @@ class DrawLocation extends JFrame {
     double zoomFactor;
     Container p;
     int numOfSensors;
+    SensorInfo si1, si2, si3;
 
     int windowWidth = Constants.CANVAS_WIDTH + 2 * Constants.CANVAS_MARGIN_WIDTH;
     int windowHeight = Constants.CANVAS_HEIGHT + 2 * Constants.CANVAS_MARGIN_HEIGHT;
@@ -55,6 +51,12 @@ class DrawLocation extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public void addData(SensorInfo si1, SensorInfo si2, SensorInfo si3){
+        this.si1 = si1;
+        this.si2 = si2;
+        this.si3 = si3;
+    }
+    
     public void paintComponents(Graphics gg) {
 //        gg.DrawLocation(10, 100, 200, 400);
         final Graphics g = gg;
@@ -67,7 +69,6 @@ class DrawLocation extends JFrame {
         g.setColor(Color.blue);
         Runnable run = new Runnable() {
             Point temp = null;
-            SensorInfo si1, si2, si3;
             int x = Constants.CANVAS_MARGIN_WIDTH;
             int y;
             String strLocation;
@@ -79,37 +80,57 @@ class DrawLocation extends JFrame {
                 Location xy;
 
                 Trilateration tri = null;
+                Bilateration bi = null;
                 while(true) {
                     try {
                         long time = System.currentTimeMillis();
                         float r1 = 740;
                         float r2 = 710 + i;
                         float r3 = 505 - i;
-                        si1 = new SensorInfo("80F5", r1);
-                        si2 = new SensorInfo("45BB", r2);
-                        si3 = new SensorInfo("79B0", r3);
+                        si1 = new SensorInfo("79B0", 684);
+                        si2 = new SensorInfo("78FB", 564);
+                        si3 = new SensorInfo("45BB", 393);
 
-                        tri = getTrilateration(si1.getAddr(), si2.getAddr(), si3.getAddr());
-                        // Get the sensor location
-                        xy = tri.getLocationFromDistance(si1.getDistance(), si2.getDistance(), si3.getDistance());
-
-                        // Draw the sensor track in real-time mode
-                        x = (int)xy.getX();
-                        y = (int)xy.getY();
-//                        y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
-//                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
-//                        System.out.println("********" + x + ", " + y);
-                        temp = new Point(x, y);
-                        cleanCanvas(g);
-
-                        // Update location label
-                        if(isInScope(x,y)) {
-                            drawCenteredCircle(g, Color.RED, x, y, 8);
-                            g.setColor(Color.BLUE);
-                            strLocation = "Sensor Location: " + x + ", " + y;
-                        }else{
+                        int numOfNull = 0;
+                        if(si1.getAddr() == null){
+                            ++numOfNull;
+                            if(si2.getAddr() == null){
+                                ++numOfNull;                                
+                                if(si3.getAddr() == null) ++numOfNull;
+                            }                   
+                        }
+                        
+                        if(numOfNull > 1){                            
                             g.setColor(Color.RED);
-                            strLocation = "Sensor Location: Out of scope!";
+                            strLocation = "Sensor Location: No valid signal!";
+                        }else{
+                            if(numOfNull == 1){
+                                bi = getBilateration(si2.getAddr(), si3.getAddr());
+                                xy = bi.getLocationFromDistance(si2.getDistance(), si3.getDistance());
+                            }else{
+                                tri = getTrilateration(si1.getAddr(), si2.getAddr(), si3.getAddr());
+                                // Get the sensor location
+                                xy = tri.getLocationFromDistance(si1.getDistance(), si2.getDistance(), si3.getDistance());
+                            }
+                            
+                            // Draw the sensor track in real-time mode
+                            x = (int)xy.getX();
+                            y = (int)xy.getY();
+    //                        y = Constants.CANVAS_MARGIN_HEIGHT + (int)(40*Math.sin(Math.PI*(x-Constants.CANVAS_MARGIN_WIDTH)/30));
+    //                        y = Constants.CANVAS_MARGIN_HEIGHT + 3*(x-Constants.CANVAS_MARGIN_WIDTH)/4;
+    //                        System.out.println("********" + x + ", " + y);
+                            temp = new Point(x, y);
+                            cleanCanvas(g);
+
+                            // Update location label
+                            if(isInScope(x,y)) {
+                                drawCenteredCircle(g, Color.RED, x, y, 8);
+                                g.setColor(Color.BLUE);
+                                strLocation = "Sensor Location: " + x + ", " + y;
+                            }else{
+                                g.setColor(Color.RED);
+                                strLocation = "Sensor Location: Out of scope!";
+                            }
                         }
                         g.clearRect(windowWidth / 2 - 8, windowHeight - 20, clear_block_width, clear_block_height);
                         g.drawString(strLocation, windowWidth / 2 - 100, windowHeight - 10);

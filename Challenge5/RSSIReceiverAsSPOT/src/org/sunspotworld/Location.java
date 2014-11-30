@@ -1,9 +1,8 @@
 /**
  * Created by Samuel on 2014/11/3.
  */
-package org.sunspotworld;
 
-public class Location{
+class Location{
     double x, y;
     public Location(double x, double y){
         this.x = x;

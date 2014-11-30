@@ -45,7 +45,7 @@ public class HelloWorldServlet extends HttpServlet {
         bw.newLine();
         bw.flush();
 
-        System.out.println("Dummy db operation **********2 ...");
+        saveToDB("FFFF", Long.toString(System.currentTimeMillis()), 113, 267);
 
         PrintWriter pw = resp.getWriter();
         pw.println("<html><head><title>Hi</title></head><body>Hello world!!!!!  See hello.log.</body></html>");
@@ -59,29 +59,37 @@ public class HelloWorldServlet extends HttpServlet {
     public void saveToDB(String address, String timestamp, int dr, int cx){
         System.out.println("Entering saveToDB()...");
 
-//        java.sql.Connection conn = null;
-//        try {
-//            // For Sqlite
-//            Class.forName("org.sqlite.JDBC").newInstance();
-//            conn = DriverManager.getConnection("jdbc:sqlite:challenges.db");
-//
-//            DSLContext create = DSL.using(conn, SQLDialect.SQLITE);
-//
+        java.sql.Connection conn = null;
+        try {
+            // For Sqlite
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "root");
+
+            System.out.println("Dummy db operation **********  1  ********** ...");
+
+            DSLContext create = DSL.using(conn, SQLDialect.MYSQL);
+
+            System.out.println("Dummy db operation **********  2  ********** ...");
+
 //            create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
 //                    Location.LOCATION.DISTANCER, Location.LOCATION.CENTERX)
 //                    .values(address, timestamp, dr, cx).execute();
-//
-//        } catch (Exception e) {
-//            // For the sake of this tutorial, let's keep exception handling simple
-//            e.printStackTrace();
-//        } finally {
-//            if (conn != null) {
-//                try {
-//                    conn.close();
-//                } catch (SQLException ignore) {
-//                }
-//            }
-//        }
+
+        } catch (Exception e) {
+            // For the sake of this tutorial, let's keep exception handling simple
+            System.out.println("Dummy db operation **********  3  ********** ...");
+
+            System.out.println(e.getMessage());
+
+            e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ignore) {
+                }
+            }
+        }
         System.out.println("Exiting saveToDB()...");
     }
 }

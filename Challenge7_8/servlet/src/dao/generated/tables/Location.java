@@ -11,10 +11,10 @@ package dao.generated.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Location extends org.jooq.impl.TableImpl<dao.generated.tables.records.LocationRecord> {
 
-	private static final long serialVersionUID = -1602348086;
+	private static final long serialVersionUID = -511134043;
 
 	/**
-	 * The singleton instance of <code>location</code>
+	 * The singleton instance of <code>test.location</code>
 	 */
 	public static final dao.generated.tables.Location LOCATION = new dao.generated.tables.Location();
 
@@ -27,39 +27,34 @@ public class Location extends org.jooq.impl.TableImpl<dao.generated.tables.recor
 	}
 
 	/**
-	 * The column <code>location.addr</code>.
+	 * The column <code>test.location.addr</code>.
 	 */
 	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.String> ADDR = createField("addr", org.jooq.impl.SQLDataType.CHAR.length(4).nullable(false), this, "");
 
 	/**
-	 * The column <code>location.time</code>.
+	 * The column <code>test.location.time</code>.
 	 */
-	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.String> TIME = createField("time", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.String> TIME = createField("time", org.jooq.impl.SQLDataType.VARCHAR.length(32), this, "");
 
 	/**
-	 * The column <code>location.distanceR</code>.
+	 * The column <code>test.location.distanceR</code>.
 	 */
 	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> DISTANCER = createField("distanceR", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
-	 * The column <code>location.centerX</code>.
+	 * The column <code>test.location.centerX</code>.
 	 */
 	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> CENTERX = createField("centerX", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
-	 * The column <code>location.field1</code>.
-	 */
-	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.String> FIELD1 = createField("field1", org.jooq.impl.SQLDataType.CLOB.defaulted(true), this, "");
-
-	/**
-	 * Create a <code>location</code> table reference
+	 * Create a <code>test.location</code> table reference
 	 */
 	public Location() {
 		this("location", null);
 	}
 
 	/**
-	 * Create an aliased <code>location</code> table reference
+	 * Create an aliased <code>test.location</code> table reference
 	 */
 	public Location(java.lang.String alias) {
 		this(alias, dao.generated.tables.Location.LOCATION);
@@ -70,7 +65,7 @@ public class Location extends org.jooq.impl.TableImpl<dao.generated.tables.recor
 	}
 
 	private Location(java.lang.String alias, org.jooq.Table<dao.generated.tables.records.LocationRecord> aliased, org.jooq.Field<?>[] parameters) {
-		super(alias, dao.generated.DefaultSchema.DEFAULT_SCHEMA, aliased, parameters, "");
+		super(alias, dao.generated.Test.TEST, aliased, parameters, "");
 	}
 
 	/**

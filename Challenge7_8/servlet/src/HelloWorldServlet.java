@@ -20,6 +20,7 @@ public class HelloWorldServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     java.sql.Connection conn = null;
     DSLContext create = null;
+    static int requestCount = 0;
 
     @Override
     public void init() throws ServletException {
@@ -58,25 +59,25 @@ public class HelloWorldServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Entering doPost()...");
+        ++requestCount;
+        System.out.println("Entering doPost()..." + requestCount);
 
         FileWriter fw = new FileWriter("C:/temp/hello.log", true);
         BufferedWriter bw = new BufferedWriter(fw);
 
-        String tmp = new Date() + " - \t" + req.getRequestURI();
+        String tmp = new Date() + " - \t\t";
         InputStream is = req.getInputStream();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
 
         String s;
-        tmp += "\n\t*** from request inputStream: ";
         while((s = br.readLine()) != null){
             tmp +=  " " + s;
             System.out.println(s.toUpperCase());
         }
         br.close();
 
-        tmp += "\n\t*** from Header: light = " + req.getHeader("light") + ", temperature = " + req.getHeader("temperature");
+//        tmp += "\n\t*** from Header: light = " + req.getHeader("light") + ", temperature = " + req.getHeader("temperature");
 
         bw.write(tmp);
         bw.newLine();
@@ -85,10 +86,11 @@ public class HelloWorldServlet extends HttpServlet {
 //        int distanceR = (int) (1473 + Math.random() * 1000);
 //        int centerX = (int) (296 + Math.random() * 100);
 
-        int distanceR = Integer.parseInt(req.getHeader("light"));
-        int centerX = (int)Float.parseFloat (req.getHeader("temperature"));
+        String address = req.getHeader("address");
+        int distanceR = Integer.parseInt(req.getHeader("distanceR"));
+        int centerX = (int)Float.parseFloat (req.getHeader("centerX"));
 
-        saveToDB("FFFF", Long.toString(System.currentTimeMillis()), distanceR, centerX);
+        saveToDB(address, Long.toString(System.currentTimeMillis()), distanceR, centerX);
 
         PrintWriter pw = resp.getWriter();
         pw.println("<html><head><title>Hi</title></head><body>Hello world!!!!!  See hello.log.</body></html>");
@@ -100,7 +102,7 @@ public class HelloWorldServlet extends HttpServlet {
     }
 
     public void saveToDB(String address, String timestamp, int dr, int cx){
-        System.out.println("Entering saveToDB()...");
+//        System.out.println("Entering saveToDB()...");
 
         try {
             create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
@@ -110,6 +112,6 @@ public class HelloWorldServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Exiting saveToDB()...");
+//        System.out.println("Exiting saveToDB()...");
     }
 }

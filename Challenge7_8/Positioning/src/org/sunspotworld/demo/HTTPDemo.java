@@ -56,12 +56,25 @@ public class HTTPDemo extends MIDlet {
                 lightVal = lightSensor.getValue();
                 tempVal = (int) (tempSensor.getCelsius() * 100);
                 float temp = (float) (tempVal * 1.0 / 100);
-                String msg = IEEEAddress.toDottedHex(ourAddr) +
-                        ": Light reading is " + lightVal +
-                        " and temperature is " + temp +
-                        " C.";
-                postMessage(postURL, msg, lightVal, temp);
-                Thread.sleep(1000);
+                
+                /*****************************************************************************
+                 * To be changed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                 * 
+                 * The dr and cx value (actually light and temperature value) are used for testing purpose
+                 * Please change to the real distanceR and centerX that are required for positioning
+                 * Samely, the address is the sensor address, it needs to be changed to the beacon's address.
+                 * 
+                 *****************************************************************************/
+                int dr = lightVal;
+                int cx = (int)temp;
+                String address = String.valueOf(IEEEAddress.toDottedHex(ourAddr)).substring(15);
+                
+                String msg = "address: " + address +
+                        ", distanceR: " + dr +
+                        ", centerX: " + cx;
+                
+                postMessage(postURL, address, dr, cx, msg);
+                Thread.sleep(100);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -95,7 +108,7 @@ public class HTTPDemo extends MIDlet {
     protected void destroyApp(boolean unconditional) throws MIDletStateChangeException {
     }
     
-    public static void postMessage(String postURL, String msg, int light, float temperature) {
+    public static void postMessage(String postURL, String addr, int distanceR, int centerX, String msg) {
         HttpConnection conn = null;
         OutputStream out = null;
         InputStream in = null;
@@ -112,8 +125,9 @@ public class HTTPDemo extends MIDlet {
             starttime = System.currentTimeMillis();
             conn = (HttpConnection) Connector.open(postURL);
             conn.setRequestMethod(HttpConnection.POST);
-            conn.setRequestProperty("light", String.valueOf(light));
-            conn.setRequestProperty("temperature", String.valueOf(temperature));
+            conn.setRequestProperty("address", addr);
+            conn.setRequestProperty("distanceR", String.valueOf(distanceR));
+            conn.setRequestProperty("centerX", String.valueOf(centerX));
 
             out = conn.openOutputStream();
             out.write((msg + "'\n").getBytes());

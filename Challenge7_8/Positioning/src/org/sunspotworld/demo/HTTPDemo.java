@@ -130,7 +130,7 @@ public class HTTPDemo extends MIDlet {
             conn.setRequestProperty("centerX", String.valueOf(centerX));
 
             out = conn.openOutputStream();
-            out.write((msg + "'\n").getBytes());
+            out.write((msg + "\n").getBytes());
             out.flush();
 
             in = conn.openInputStream();

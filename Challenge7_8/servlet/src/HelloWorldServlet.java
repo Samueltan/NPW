@@ -82,8 +82,11 @@ public class HelloWorldServlet extends HttpServlet {
         bw.newLine();
         bw.flush();
 
-        int distanceR = (int) (1473 + Math.random() * 1000);
-        int centerX = (int) (296 + Math.random() * 100);
+//        int distanceR = (int) (1473 + Math.random() * 1000);
+//        int centerX = (int) (296 + Math.random() * 100);
+
+        int distanceR = Integer.parseInt(req.getHeader("light"));
+        int centerX = (int)Float.parseFloat (req.getHeader("temperature"));
 
         saveToDB("FFFF", Long.toString(System.currentTimeMillis()), distanceR, centerX);
 

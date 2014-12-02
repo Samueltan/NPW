@@ -65,16 +65,18 @@ public class HTTPDemo extends MIDlet {
                  * Samely, the address is the sensor address, it needs to be changed to the beacon's address.
                  * 
                  *****************************************************************************/
-                int dr = lightVal;
-                int cx = (int)temp;
+                int centerOffset = lightVal;
+                float speed = temp;
                 String address = String.valueOf(IEEEAddress.toDottedHex(ourAddr)).substring(15);
+                int passedTriggerNo = 0;
                 
-                String msg = "address: " + address +
-                        ", distanceR: " + dr +
-                        ", centerX: " + cx;
+//                String msg = "address: " + address +
+//                        ", speed: " + speed +
+//                        ", centerX: " + centerOffset +
+//                        ", passedTrigger: " + passedTriggerNo;
                 
-                postMessage(postURL, address, dr, cx, msg);
-                Thread.sleep(100);
+                postMessage(postURL, address, speed, centerOffset, passedTriggerNo);
+//                Thread.sleep(100);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -108,7 +110,7 @@ public class HTTPDemo extends MIDlet {
     protected void destroyApp(boolean unconditional) throws MIDletStateChangeException {
     }
     
-    public static void postMessage(String postURL, String addr, int distanceR, int centerX, String msg) {
+    public static void postMessage(String postURL, String addr, float speed, int centerOffset, int passedTriggerNo) {
         HttpConnection conn = null;
         OutputStream out = null;
         InputStream in = null;
@@ -116,7 +118,7 @@ public class HTTPDemo extends MIDlet {
         String resp = null;
         ProgressDisplayThread displayProg = null;
 
-        System.out.println("Posting: <" + msg + "> to " + postURL);
+//        System.out.println("Posting: <" + msg + "> to " + postURL);
 
         try {
             POSTstatus = CONNECTING;
@@ -126,12 +128,13 @@ public class HTTPDemo extends MIDlet {
             conn = (HttpConnection) Connector.open(postURL);
             conn.setRequestMethod(HttpConnection.POST);
             conn.setRequestProperty("address", addr);
-            conn.setRequestProperty("distanceR", String.valueOf(distanceR));
-            conn.setRequestProperty("centerX", String.valueOf(centerX));
+            conn.setRequestProperty("speed", String.valueOf(speed));
+            conn.setRequestProperty("centerOffset", String.valueOf(centerOffset));
+            conn.setRequestProperty("passedTriggerNo", String.valueOf(passedTriggerNo));
 
-            out = conn.openOutputStream();
-            out.write((msg + "\n").getBytes());
-            out.flush();
+//            out = conn.openOutputStream();
+//            out.write((msg + "\n").getBytes());
+//            out.flush();
 
             in = conn.openInputStream();
             resp = conn.getResponseMessage();

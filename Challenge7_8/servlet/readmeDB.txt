@@ -13,8 +13,9 @@ mysql:
 CREATE TABLE `location` (
   `addr` char(4) NOT NULL,
   `time` varchar(32) DEFAULT NULL,
-  `distanceR` int DEFAULT 0,
-  `centerX` int DEFAULT 0
+  `speed` float(4,1) DEFAULT 0,
+  `center_offset` int DEFAULT 0,
+  `triger_passed_no` int DEFAULT 0
 );
 
 // To generate the DAO classes(windows use ';') - for sqlite

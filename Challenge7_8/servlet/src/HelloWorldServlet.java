@@ -66,18 +66,24 @@ public class HelloWorldServlet extends HttpServlet {
         BufferedWriter bw = new BufferedWriter(fw);
 
         String tmp = new Date() + " - \t\t";
-        InputStream is = req.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
-        BufferedReader br = new BufferedReader(isr);
+//        InputStream is = req.getInputStream();
+//        InputStreamReader isr = new InputStreamReader(is);
+//        BufferedReader br = new BufferedReader(isr);
+//
+//        String s;
+//        while((s = br.readLine()) != null){
+//            tmp +=  " " + s;
+//            System.out.println(s.toUpperCase());
+//        }
+//        br.close();
 
-        String s;
-        while((s = br.readLine()) != null){
-            tmp +=  " " + s;
-            System.out.println(s.toUpperCase());
-        }
-        br.close();
+        String address = req.getHeader("address");
+        float speed = Float.parseFloat(req.getHeader("speed"));
+        int centerOffset = Integer.parseInt(req.getHeader("centerOffset"));
+        int passedTriggerNo = Integer.parseInt(req.getHeader("passedTriggerNo"));
 
-//        tmp += "\n\t*** from Header: light = " + req.getHeader("light") + ", temperature = " + req.getHeader("temperature");
+        tmp += "\t*** address: " + address + ", speed: " + speed
+            + ", centerOffset: " +  centerOffset + ", passedTriggerNo: " + passedTriggerNo;
 
         bw.write(tmp);
         bw.newLine();
@@ -86,11 +92,7 @@ public class HelloWorldServlet extends HttpServlet {
 //        int distanceR = (int) (1473 + Math.random() * 1000);
 //        int centerX = (int) (296 + Math.random() * 100);
 
-        String address = req.getHeader("address");
-        int distanceR = Integer.parseInt(req.getHeader("distanceR"));
-        int centerX = (int)Float.parseFloat (req.getHeader("centerX"));
-
-        saveToDB(address, Long.toString(System.currentTimeMillis()), distanceR, centerX);
+        saveToDB(address, Long.toString(System.currentTimeMillis()), speed, centerOffset, passedTriggerNo);
 
         PrintWriter pw = resp.getWriter();
         pw.println("<html><head><title>Hi</title></head><body>Hello world!!!!!  See hello.log.</body></html>");
@@ -101,13 +103,13 @@ public class HelloWorldServlet extends HttpServlet {
         System.out.println("Exiting doPost()...");
     }
 
-    public void saveToDB(String address, String timestamp, int dr, int cx){
+    public void saveToDB(String address, String timestamp, float speed, int centerOffset, int passedTrigger){
 //        System.out.println("Entering saveToDB()...");
 
         try {
             create.insertInto(Location.LOCATION, Location.LOCATION.ADDR, Location.LOCATION.TIME,
-                    Location.LOCATION.DISTANCER, Location.LOCATION.CENTERX)
-                    .values(address, timestamp, dr, cx).execute();
+                    Location.LOCATION.SPEED, Location.LOCATION.CENTER_OFFSET, Location.LOCATION.TRIGER_PASSED_NO)
+                    .values(address, timestamp, (double) speed, centerOffset, passedTrigger).execute();
 
         } catch (Exception e) {
             e.printStackTrace();

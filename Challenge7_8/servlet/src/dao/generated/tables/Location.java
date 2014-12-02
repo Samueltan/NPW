@@ -11,7 +11,7 @@ package dao.generated.tables;
 @java.lang.SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Location extends org.jooq.impl.TableImpl<dao.generated.tables.records.LocationRecord> {
 
-	private static final long serialVersionUID = -511134043;
+	private static final long serialVersionUID = -604184682;
 
 	/**
 	 * The singleton instance of <code>test.location</code>
@@ -37,14 +37,19 @@ public class Location extends org.jooq.impl.TableImpl<dao.generated.tables.recor
 	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.String> TIME = createField("time", org.jooq.impl.SQLDataType.VARCHAR.length(32), this, "");
 
 	/**
-	 * The column <code>test.location.distanceR</code>.
+	 * The column <code>test.location.speed</code>.
 	 */
-	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> DISTANCER = createField("distanceR", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
+	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Double> SPEED = createField("speed", org.jooq.impl.SQLDataType.FLOAT.defaulted(true), this, "");
 
 	/**
-	 * The column <code>test.location.centerX</code>.
+	 * The column <code>test.location.center_offset</code>.
 	 */
-	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> CENTERX = createField("centerX", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
+	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> CENTER_OFFSET = createField("center_offset", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
+
+	/**
+	 * The column <code>test.location.triger_passed_no</code>.
+	 */
+	public final org.jooq.TableField<dao.generated.tables.records.LocationRecord, java.lang.Integer> TRIGER_PASSED_NO = createField("triger_passed_no", org.jooq.impl.SQLDataType.INTEGER.defaulted(true), this, "");
 
 	/**
 	 * Create a <code>test.location</code> table reference

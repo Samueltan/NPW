@@ -2,37 +2,51 @@
 <%@ page import="java.sql.*"%>
 <html>
 <body>
-<%
-Connection con;
-Statement sql;
-ResultSet rs;
-try{Class.forName("com.mysql.jdbc.Driver").newInstance();}
-catch(Exception e){out.print(e);}
-try{
-    String uri="jdbc:mysql://localhost:3306/test";
-    con=DriverManager.getConnection(uri,"root","root");
-    sql=con.createStatement();
-    rs=sql.executeQuery("SELECT * FROM location");
-    out.print("<table border=2>");
-    out.print("<tr>");
-    out.print("<th width=100>"+"addr");
-    out.print("<th width=100>"+"time");
-    out.print("<th width=100>"+"distanceR");
-    out.print("<th width=100>"+"centerX");
-    out.print("</tr>");
-    while(rs.next()){
-        out.print("<tr>");
-        out.print("<td>"+rs.getString(1)+"</td>");
-        out.print("<td>"+rs.getString(2)+"</td>");
-        out.print("<td>"+rs.getString(3)+"</td>");
-        out.print("<td>"+rs.getString(4)+"</td>");
-        out.print("</tr>");
+    <%
+    Connection con;
+    Statement sql;
+    ResultSet rs = null;
+    String s = null;
+    
+    try{
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
+    }catch(Exception e){
+        out.print(e);
     }
-    out.print("</table>");
-    con.close();
-}
-catch(SQLException e1){out.print(e1);}
-%>
+    
+    try{
+        String uri="jdbc:mysql://localhost:3306/test";
+        con=DriverManager.getConnection(uri,"root","root");
+        sql=con.createStatement();
+        rs=sql.executeQuery("SELECT * FROM location");
+        out.print("<table border=2>");
+        out.print("<tr>");
+        out.print("<th width=100>"+"addr");
+        out.print("<th width=100>"+"time");
+        out.print("<th width=100>"+"speed");
+        out.print("<th width=100>"+"center offset");
+        out.print("<th width=100>"+"passed trigger No#");
+        out.print("</tr>");
+        while(rs.next()){
+            s = rs.getString(1);
+            out.print("<tr>");
+            out.print("<td>"+rs.getString(1)+"</td>");
+            out.print("<td>"+rs.getString(2)+"</td>");
+            out.print("<td>"+rs.getString(3)+"</td>");
+            out.print("<td>"+rs.getString(4)+"</td>");
+            out.print("<td>"+rs.getString(5)+"</td>");
+            out.print("</tr>");
+        }
+        out.print("</table>");
+        con.close();
+    }catch(SQLException e1){
+        out.print(e1);
+    }catch(Exception e){
+        out.print(e);
+    }
+
+    %>
+    
     <canvas id="myCanvas" width="1024" height="768" style="border:1px solid #d3d3d3;">
     Your browser does not support the HTML5 canvas tag.
     </canvas>
@@ -80,6 +94,9 @@ catch(SQLException e1){out.print(e1);}
                 x += 20; 
             },
         100);
+
+        var s = "<%=s%>"; //"" can not be ignored!
+        alert(s);  
     </script>
 </body>
 </html>

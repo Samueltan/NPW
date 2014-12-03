@@ -1,12 +1,11 @@
 <%@ page contentType="text/html;charset=utf-8"%>
-<%@ page import="java.sql.*"%>
+<%@ page import="java.sql.*,java.util.Calendar,java.text.*"%>
 <html>
 <body>
     <%
     Connection con;
     Statement sql;
     ResultSet rs = null;
-    String s = null;
     
     try{
         Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -14,12 +13,15 @@
         out.print(e);
     }
     
+    String s = null;
     try{
         String uri="jdbc:mysql://localhost:3306/test";
         con=DriverManager.getConnection(uri,"root","root");
         sql=con.createStatement();
         rs=sql.executeQuery("SELECT * FROM location");
-        out.print("<table border=2>");
+        DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+/*        out.print("<table border=2>");
         out.print("<tr>");
         out.print("<th width=100>"+"addr");
         out.print("<th width=100>"+"time");
@@ -27,17 +29,24 @@
         out.print("<th width=100>"+"center offset");
         out.print("<th width=100>"+"passed trigger No#");
         out.print("</tr>");
+        */
         while(rs.next()){
-            s = rs.getString(1);
-            out.print("<tr>");
+            java.util.Date d = new java.util.Date(Long.parseLong(rs.getString(2)));
+            //s = stmp;
+            Calendar c = Calendar.getInstance();
+            c.setTime(d);
+            s = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DATE) + " "
+                + c.get(Calendar.HOUR) + ":" + (c.get(Calendar.MINUTE) + 1) + ":" + c.get(Calendar.SECOND);
+/*            out.print("<tr>");
             out.print("<td>"+rs.getString(1)+"</td>");
             out.print("<td>"+rs.getString(2)+"</td>");
             out.print("<td>"+rs.getString(3)+"</td>");
             out.print("<td>"+rs.getString(4)+"</td>");
             out.print("<td>"+rs.getString(5)+"</td>");
             out.print("</tr>");
+        */
         }
-        out.print("</table>");
+        //out.print("</table>");
         con.close();
     }catch(SQLException e1){
         out.print(e1);
@@ -47,7 +56,7 @@
 
     %>
     
-    <canvas id="myCanvas" width="1024" height="768" style="border:1px solid #d3d3d3;">
+    <canvas id="myCanvas" width="360" height="730" style="border:1px solid #d3d3d3;">
     Your browser does not support the HTML5 canvas tag.
     </canvas>
 
@@ -59,7 +68,7 @@
         img.onload = function(){
             ctx.drawImage(img,0,0);
         }
-        img.src = 'Penguins.jpg';
+        img.src = 'map2.png';
 
         var x = 0;
         var y = 20;
@@ -76,11 +85,11 @@
                 ctx.stroke();
                 ctx.closePath();
                 //ctx.fillRect(x,10,100,50);
-                if (x > 1030  ) {
+                if (x > 366  ) {
                     // clearInterval(ss);
                     x = 0;
                     y += 100;
-                    if(y > 774){
+                    if(y > 738){
                         y = 20;
                     }
                 }

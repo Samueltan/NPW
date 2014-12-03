@@ -76,7 +76,7 @@ public class HTTPDemo extends MIDlet {
 //                        ", passedTrigger: " + passedTriggerNo;
                 
                 postMessage(postURL, address, speed, centerOffset, passedTriggerNo);
-//                Thread.sleep(100);
+                Thread.sleep(1000);
             }
         } catch (IOException ex) {
             ex.printStackTrace();

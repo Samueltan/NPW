@@ -100,6 +100,7 @@ public class HelloWorldServlet extends HttpServlet {
         pw.close();
         bw.close();
 
+        resp.setHeader("connection", "close");
         System.out.println("Exiting doPost()...");
     }
 

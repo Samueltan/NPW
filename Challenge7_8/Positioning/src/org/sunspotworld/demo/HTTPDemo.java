@@ -44,6 +44,7 @@ public class HTTPDemo extends MIDlet {
     private ILightSensor lightSensor = (ILightSensor) Resources.lookup(ILightSensor.class);
     private ITemperatureInput tempSensor = (ITemperatureInput) Resources.lookup(ITemperatureInput.class);
     private long ourAddr = RadioFactory.getRadioPolicyManager().getIEEEAddress();
+    HttpConnection conn = null;
         
     protected void startApp() throws MIDletStateChangeException {
 //        // The resource lookup API supports tags ... this gets us Switch 2.
@@ -76,7 +77,7 @@ public class HTTPDemo extends MIDlet {
 //                        ", passedTrigger: " + passedTriggerNo;
                 
                 postMessage(postURL, address, speed, centerOffset, passedTriggerNo);
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -110,21 +111,24 @@ public class HTTPDemo extends MIDlet {
     protected void destroyApp(boolean unconditional) throws MIDletStateChangeException {
     }
     
-    public static void postMessage(String postURL, String addr, float speed, int centerOffset, int passedTriggerNo) {
-        HttpConnection conn = null;
+    public void postMessage(String postURL, String addr, float speed, int centerOffset, int passedTriggerNo) {
         OutputStream out = null;
         InputStream in = null;
         long starttime = 0;
         String resp = null;
         ProgressDisplayThread displayProg = null;
 
-//        System.out.println("Posting: <" + msg + "> to " + postURL);
+        System.out.println("Posting: <" + postURL + "> to " + postURL);
 
         try {
             POSTstatus = CONNECTING;
             displayProg = new ProgressDisplayThread();
             displayProg.start();
             starttime = System.currentTimeMillis();
+            
+                if (conn != null) {
+                    conn.close();
+                }
             conn = (HttpConnection) Connector.open(postURL);
             conn.setRequestMethod(HttpConnection.POST);
             conn.setRequestProperty("address", addr);
@@ -145,7 +149,8 @@ public class HTTPDemo extends MIDlet {
             }
         } catch (Exception ex) {
             POSTstatus = IOERROR;
-            resp = ex.getMessage();
+            resp = ex.getMessage();            
+            System.out.println("******************** exception:" + ex.getMessage());
         } finally {
             try {
                 if (in != null) {

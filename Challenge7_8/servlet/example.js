@@ -23,7 +23,7 @@ var canvas = document.getElementById('canvas'),
              };
     dashboardAngle = 90;
 // Functions..........................................................
-function drawGrid(color, stepx, stepy) {
+function drawGrid(circle, color, stepx, stepy) {
    context.save()
    context.shadowColor = undefined;
    context.shadowOffsetX = 0;
@@ -34,8 +34,10 @@ function drawGrid(color, stepx, stepy) {
    }
    context.fillStyle = '#ffffff';
    context.lineWidth = 0.5;
-   context.fillRect(0, 0, context.canvas.width,
-                          context.canvas.height);
+   // alert(circle.x + ', ' + circle.x);
+   // context.fillRect(circle.x - context.canvas.width/4, 0,
+   //                  context.canvas.width/2, context.canvas.height);
+   context.fillRect(0, 0, context.canvas.width, context.canvas.height);
    for (var i = stepx + 0.5;
             i < context.canvas.width; i += stepx) {
      context.beginPath();
@@ -148,13 +150,13 @@ function drawTicks(circle) {
    }
    context.restore();
 }
-function drawAnnotations(circle, caption) {
+function drawAnnotations(circle, caption, start, step) {
    var radius = circle.radius + RING_INNER_RADIUS;
    context.save();
    context.fillStyle = ANNOTATIONS_FILL_STYLE;
    context.font = ANNOTATIONS_TEXT_SIZE + 'px Helvetica'; 
    
-   for (var angle=0, i=9; angle <= Math.PI; angle += Math.PI/8, i--) {
+   for (var angle=0, i=start; angle <= Math.PI; angle += Math.PI/8, i=i-step) {
       context.beginPath();
       context.fillText(i,
          circle.x + Math.cos(angle) * (radius - TICK_WIDTH*2),
@@ -172,18 +174,6 @@ function keyUp(){
   var ctx=c.getContext("2d");
 
   switch (code){
-    case 37:
-      // alert("Left pressed!");
-      if(dashboardAngle < 180)
-        dashboardAngle += 22.5;
-      drawDial(circle2, dashboardAngle, 'Steering Wheel');
-      break;
-    case 39:
-      // alert("Right pressed!");
-      if(dashboardAngle > 0)
-        dashboardAngle -= 22.5;
-      drawDial(circle2, dashboardAngle, 'Steering Wheel');
-      break;
     case 38:
       // alert("Up pressed!");
       if(dashboardAngle > 0)
@@ -196,6 +186,18 @@ function keyUp(){
         dashboardAngle += 22.5;
       drawDial(circle1, dashboardAngle, 'Speed');
       break;
+    case 37:
+      // alert("Left pressed!");
+      if(dashboardAngle < 180)
+        dashboardAngle += 22.5;
+      drawDial(circle2, dashboardAngle, 'Steering Wheel');
+      break;
+    case 39:
+      // alert("Right pressed!");
+      if(dashboardAngle > 0)
+        dashboardAngle -= 22.5;
+      drawDial(circle2, dashboardAngle, 'Steering Wheel');
+      break;
     default:
       break;
   }
@@ -203,23 +205,128 @@ function keyUp(){
 
 function drawDial(circle, angle, caption) {
    var loc = {x: circle.x, y: circle.y};
-   context.clearRect(0,0,640,320);
-   drawGrid('lightgray', 10, 10);
+   // Speed dail
+   if(circle.x == 160){
+      context.clearRect(0,0,320,320);
+      drawAnnotations(circle, caption, 4, 1);
+    // Steering wheel dail
+   }else{
+      context.clearRect(320,0,320,320);
+      drawAnnotations(circle, caption, 90, 22.5);
+    }
 
+   // drawGrid(circle, 'lightgray', 10, 10);
+
+   // alert(circle.x);
    drawCentroid(circle);
    drawCentroidGuidewire(circle, loc, angle);
    drawRing(circle);
    drawTickInnerCircle(circle);
    drawTicks(circle);
-   drawAnnotations(circle, caption);
 
 }
+
+function sendCommand(command){
+    var xmlHttp; 
+     
+    // 处理Ajax浏览器兼容
+    if (window.ActiveXObject) {   
+        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");   
+    }else if (window.XMLHttpRequest) {   
+        xmlHttp = new XMLHttpRequest();   
+    } 
+     
+    var url = "control.jsp?cmd=" + command.toString(); // 使用JS中变量tmp    
+    xmlHttp.open("post",url,true);   //配置XMLHttpRequest对象
+      
+     // alert("*** url = " + url);
+    //设置回调函数
+    xmlHttp.onreadystatechange = function (){
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+           // var respText = xmlHttp.responseText;
+           alert("Success! cmd = " + command);        }
+    }
+    xmlHttp.send(null);  // 发送请求
+}
+    
 // Initialization....................................................
 context.shadowOffsetX = 2;
 context.shadowOffsetY = 2;
 context.shadowBlur = 4;
 context.textAlign = 'center';
 context.textBaseline = 'middle';
+
 drawDial(circle1, dashboardAngle, 'Speed');
 drawDial(circle2, dashboardAngle, 'Steering Wheel');
 document.onkeyup=keyUp;
+
+// var loc1 = {x: circle1.x, y: circle1.y};
+// var loc2 = {x: circle2.x, y: circle2.y};
+//    // if(circle.x == 160)
+//    //    context.clearRect(0,0,320,320);
+//    // else
+//    //    context.clearRect(320,0,320,320);
+
+//    drawGrid('lightgray', 10, 10);
+
+//    drawCentroid(circle1);
+//    drawCentroidGuidewire(circle1, loc1, dashboardAngle);
+//    drawRing(circle1);
+//    drawTickInnerCircle(circle1);
+//    drawTicks(circle1);
+//    drawAnnotations(circle1, 'speed');
+
+//    drawCentroid(circle2);
+//    drawCentroidGuidewire(circle2, loc2, dashboardAngle);
+//    drawRing(circle2);
+//    drawTickInnerCircle(circle2);
+//    drawTicks(circle2);
+//    drawAnnotations(circle2, 'steering wheel');
+
+var c=document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+
+var img = new Image();
+img.onload = function(){
+    ctx.drawImage(img,0,0);
+}
+img.src = 'map2.png';
+
+var x = 60;
+var y = 30;
+var ss = setInterval(
+    function(){  
+        ctx.clearRect(x-10,y-11,22,22);
+        if(x>70)
+            ctx.clearRect(x-31,y-11,22,22);
+
+        //ctx.translate(x,0);
+        ctx.beginPath();
+        ctx.fillStyle="blue";  
+        ctx.arc(x,y,10,0,Math.PI*2,true);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        //ctx.fillRect(x,10,100,50);
+        if (x > 270  ) {
+            // clearInterval(ss);
+            ctx.clearRect(x-11,y-11,22,22);
+            x = 60;
+            y += 283;
+            if(y > 360){
+                y = 30;
+            }
+        }
+        // for(i=0;i<1000;++i){
+        //     for(j=0;j<1000;++j){
+        //         for(k=0;k<50;++k){
+        //             var l=0;
+        //         }
+        //     }
+        // }
+        x += 20; 
+    },
+100);
+
+var s = "<%=s%>"; //"" can not be ignored!
+//alert(s);  

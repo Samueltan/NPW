@@ -190,12 +190,11 @@ function keyUp(){
         drawDial(circle1, 90, 'Speed');
         drawDial(circle2, 90, 'Steering Wheel');
         manualFlg = false;
+        speed = 0;
       }
       break;
-    case 32:
-      // alert("Space pressed!");
-var s = "<%=sss%>"; //"" can not be ignored!
-alert(s);  
+    case 13:
+      // alert("Enter pressed!");
       manualFlg = !manualFlg;
       if(manualFlg)
         mm.innerHTML = 'manual';
@@ -204,13 +203,26 @@ alert(s);
 
       sendCommand(0, 0);
       break;
+    case 32:
+      // alert("Space pressed!");
+      var speedTmp = speed;
+      if(speed == 0){
+        speed = 2;
+      }else{
+        speed = 0;
+      }
+      dashboardAngle = (speedStart - speed) * 45 / 2;
+      drawDial(circle1, dashboardAngle, 'Speed');
+      sendCommand(4, speed);
+      break;
     case 38:
       if(manualFlg){
         // alert("Up pressed!");
         if(dashboardAngle > 0){
           dashboardAngle -= 22.5;
           drawDial(circle1, dashboardAngle, 'Speed');
-          sendCommand(3, speedStart - 2*dashboardAngle / 45);
+          speed = speedStart - 2*dashboardAngle / 45
+          sendCommand(3, speed);
         }
       }
       break;
@@ -220,7 +232,8 @@ alert(s);
         if(dashboardAngle < 180){
           dashboardAngle += 22.5;
           drawDial(circle1, dashboardAngle, 'Speed');
-          sendCommand(4, speedStart - 2*dashboardAngle / 45);
+          speed = speedStart - 2*dashboardAngle / 45
+          sendCommand(4, speed);
           //sendCommand(4, speedStart - 8 * speedStep * dashboardAngle / Math.PI );
         }
       }
@@ -327,14 +340,15 @@ img.src = 'map2.png';
 
 var x = 60;
 var y = 560;
+var speed = 0;
 // var x = 275;
 // var y = 80;
 var ss = setInterval(
     function(){  
-      var speed = 2;
+      // speed = 2;
       // path 1 (before beacon 1)
       if(y>498){
-        ctx.clearRect(x-11,y,22,22);
+        ctx.clearRect(x-16,y,31,31);
         ctx.beginPath();
         ctx.fillStyle="blue";  
         ctx.arc(x,y,10,0,Math.PI*2,true);
@@ -345,7 +359,7 @@ var ss = setInterval(
       }else{
         if(x<275 && y>400){
           // path 2 (between beacon 1 and 2)
-          ctx.clearRect(x-16,y-11,28,28);
+          ctx.clearRect(x-16,y-16,31,31);
 
           ctx.beginPath();
           ctx.fillStyle="blue";  
@@ -357,7 +371,7 @@ var ss = setInterval(
         }else{
           if(y>35){
             // path 3 (between beacon 2 and 3)
-            ctx.clearRect(x-16,y-11,31,31);
+            ctx.clearRect(x-16,y-16,31,31);
             ctx.beginPath();
             ctx.fillStyle="blue";  
             ctx.arc(x,y,10,0,Math.PI*2,true);
@@ -371,7 +385,7 @@ var ss = setInterval(
 
       if(x>60 && y<=35){
         // path 4 (between beacon 3 and 4)
-        ctx.clearRect(x-11,y-11,31,31);
+        ctx.clearRect(x-16,y-16,31,31);
 
         ctx.beginPath();
         ctx.fillStyle="blue";  

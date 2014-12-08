@@ -71,7 +71,17 @@
         <canvas id='canvas' width='640' height='320'> Canvas not supported</canvas>
         <center>
             <H1>
-                Current Mode: <span id="mymode"><%=mode%></span>
+                
+                Current Mode: <font color="red"><span id="mymode"><%=mode%></span></font><br>
+                
+                Key Control: <br>
+                <table>
+                    <tr><td width="150">Escape:</td><td>Reset (set to auto mode and stop)</td><tr>
+                    <tr><td>Enter:</td><td>Mode switch (Auto | Manual)</td><tr>
+                    <tr><td>Blank Space:</td><td>Pause | Resume</td><tr>
+                    <tr><td>Up / Down:</td><td>Speed Up | Down</td><tr>
+                    <tr><td>Left / Right:</td><td>Turn Left | Right</td><tr>
+                </table>
             </H1>
         </center>
     </div>

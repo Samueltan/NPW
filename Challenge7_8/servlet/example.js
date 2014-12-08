@@ -194,6 +194,8 @@ function keyUp(){
       break;
     case 32:
       // alert("Space pressed!");
+var s = "<%=sss%>"; //"" can not be ignored!
+alert(s);  
       manualFlg = !manualFlg;
       if(manualFlg)
         mm.innerHTML = 'manual';
@@ -324,40 +326,63 @@ img.onload = function(){
 img.src = 'map2.png';
 
 var x = 60;
-var y = 30;
+var y = 560;
+// var x = 275;
+// var y = 80;
 var ss = setInterval(
     function(){  
-        ctx.clearRect(x-10,y-11,22,22);
-        if(x>70)
-            ctx.clearRect(x-31,y-11,22,22);
-
-        //ctx.translate(x,0);
+      var speed = 2;
+      // path 1 (before beacon 1)
+      if(y>498){
+        ctx.clearRect(x-11,y,22,22);
         ctx.beginPath();
         ctx.fillStyle="blue";  
         ctx.arc(x,y,10,0,Math.PI*2,true);
         ctx.fill();
         ctx.stroke();
         ctx.closePath();
-        //ctx.fillRect(x,10,100,50);
-        if (x > 270  ) {
-            // clearInterval(ss);
-            ctx.clearRect(x-11,y-11,22,22);
-            x = 60;
-            y += 283;
-            if(y > 360){
-                y = 30;
-            }
+        y -= speed;
+      }else{
+        if(x<275 && y>400){
+          // path 2 (between beacon 1 and 2)
+          ctx.clearRect(x-16,y-11,28,28);
+
+          ctx.beginPath();
+          ctx.fillStyle="blue";  
+          ctx.arc(x,y,10,0,Math.PI*2,true);
+          ctx.fill();
+          ctx.stroke();
+          ctx.closePath();
+          x += speed;
+        }else{
+          if(y>35){
+            // path 3 (between beacon 2 and 3)
+            ctx.clearRect(x-16,y-11,31,31);
+            ctx.beginPath();
+            ctx.fillStyle="blue";  
+            ctx.arc(x,y,10,0,Math.PI*2,true);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+            y -= speed;
+          }
         }
-        // for(i=0;i<1000;++i){
-        //     for(j=0;j<1000;++j){
-        //         for(k=0;k<50;++k){
-        //             var l=0;
-        //         }
-        //     }
-        // }
-        x += 20; 
+      }
+
+      if(x>60 && y<=35){
+        // path 4 (between beacon 3 and 4)
+        ctx.clearRect(x-11,y-11,31,31);
+
+        ctx.beginPath();
+        ctx.fillStyle="blue";  
+        ctx.arc(x,y,10,0,Math.PI*2,true);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        x -= speed;
+      }
     },
 100);
 
-var s = "<%=s%>"; //"" can not be ignored!
-//alert(s);  
+// var s = "<%=sss%>"; //"" can not be ignored!
+// alert(sss);  

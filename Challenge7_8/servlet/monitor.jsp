@@ -14,7 +14,7 @@
     Statement sql;
     ResultSet rs = null;
     String mode = null;
-    
+    // String sss = "samuel";
     try{
         Class.forName("com.mysql.jdbc.Driver").newInstance();
 
@@ -28,39 +28,29 @@
         out.print(e);
     }
     
-    String s = null;
+    String sss = null;
     try{
         String uri="jdbc:mysql://localhost:3306/test";
         con=DriverManager.getConnection(uri,"root","root");
         sql=con.createStatement();
-        rs=sql.executeQuery("SELECT * FROM location");
+        rs=sql.executeQuery("select * from location where time=(select max(time) from location)");
         DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-/*        out.print("<table border=2>");
-        out.print("<tr>");
-        out.print("<th width=100>"+"addr");
-        out.print("<th width=100>"+"time");
-        out.print("<th width=100>"+"speed");
-        out.print("<th width=100>"+"center offset");
-        out.print("<th width=100>"+"passed trigger No#");
-        out.print("</tr>");
-        */
         while(rs.next()){
-            java.util.Date d = new java.util.Date(Long.parseLong(rs.getString(2)));
+            //java.util.Date d = new java.util.Date(Long.parseLong(rs.getString(2)));
             //s = stmp;
-            Calendar c = Calendar.getInstance();
-            c.setTime(d);
-            s = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DATE) + " "
-                + c.get(Calendar.HOUR) + ":" + (c.get(Calendar.MINUTE) + 1) + ":" + c.get(Calendar.SECOND);
-/*            out.print("<tr>");
-            out.print("<td>"+rs.getString(1)+"</td>");
-            out.print("<td>"+rs.getString(2)+"</td>");
-            out.print("<td>"+rs.getString(3)+"</td>");
-            out.print("<td>"+rs.getString(4)+"</td>");
-            out.print("<td>"+rs.getString(5)+"</td>");
-            out.print("</tr>");
-        */
+            //Calendar c = Calendar.getInstance();
+            //c.setTime(d);
+            //s = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DATE) + " "
+            //    + c.get(Calendar.HOUR) + ":" + (c.get(Calendar.MINUTE) + 1) + ":" + c.get(Calendar.SECOND);
+
+            float speed = rs.getFloat(3);
+            int centerOffset = rs.getInt(4);
+            int triggerPassed = rs.getInt(5);
+            sss = "speed = " + speed + ", center offset = " + centerOffset + ", trigger passed = " + triggerPassed;
         }
+        System.out.println("*** monitor 1 *** sss = " + sss);
+    out.write("<SCRIPT language="+"'"+"JavaScript"+"'"+">var sss="+"'"+sss+"'"+";</SCRIPT>");
         //out.print("</table>");
         con.close();
     }catch(SQLException e1){
@@ -76,15 +66,6 @@
         </canvas>
     </div>
 
-   <!--  <input type="button" name="btnForward" value="^" onclick="sendCommand(2)"/>
-    <input type="button" name="btnBackward" value="v" onclick="sendCommand(4)"/>
-    <input type="button" name="btnStop" value="||" onclick="sendCommand(3)"/>
-    <input type="button" name="btnAuto" value="Auto" onclick="sendCommand(0)"/>
-    <input type="button" name="btnManual" value="Manual" onclick="sendCommand(1)"/>
-    <input type="button" name="btnLeft" value="<<" onclick="sendCommand(5)"/>
-    <input type="button" name="btnRight" value=">>" onclick="sendCommand(6)"/>
-    <input type="button" name="speedup" value="+" onclick="sendCommand(7)"/>
-    <input type="button" name="speeddown" value="-" onclick="sendCommand(8)"/> -->
 
     <div class="div-b">
         <canvas id='canvas' width='640' height='320'> Canvas not supported</canvas>

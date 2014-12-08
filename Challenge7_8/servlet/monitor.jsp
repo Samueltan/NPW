@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=utf-8"%>
-<%@ page import="java.sql.*,java.util.Calendar,java.text.*"%>
+<%@ page import="java.sql.*,java.io.*,java.util.Calendar,java.text.*,java.util.Properties"%>
 <html>
 <head>
     <style> 
@@ -13,10 +13,17 @@
     Connection con;
     Statement sql;
     ResultSet rs = null;
-    String mode = "Auto";
+    String mode = null;
     
     try{
         Class.forName("com.mysql.jdbc.Driver").newInstance();
+
+        InputStream fis = new FileInputStream("D:/Program Files/Apache Software Foundation/Tomcat 8.0/webapps/myservlet/cmd.properties");
+        Properties prop = new Properties();
+        prop.load(fis);
+
+        mode = prop.getProperty("mode");
+
     }catch(Exception e){
         out.print(e);
     }
@@ -82,9 +89,9 @@
     <div class="div-b">
         <canvas id='canvas' width='640' height='320'> Canvas not supported</canvas>
         <center>
-            <p>
-                Current Mode: <%=mode%>
-            </p>
+            <H1>
+                Current Mode: <span id="mymode"><%=mode%></span>
+            </H1>
         </center>
     </div>
     <script src = 'example.js'></script>

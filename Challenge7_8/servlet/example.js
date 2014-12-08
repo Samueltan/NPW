@@ -22,6 +22,12 @@ var canvas = document.getElementById('canvas'),
                radius: 60
              };
     dashboardAngle = 90;
+  var manualFlg = false;
+  var speedStart = 4;
+  var speedStep = 1;
+  var wheelStart = 90;
+  var wheelStep = 22.5;
+
 // Functions..........................................................
 function drawGrid(circle, color, stepx, stepy) {
    context.save()
@@ -156,7 +162,8 @@ function drawAnnotations(circle, caption, start, step) {
    context.fillStyle = ANNOTATIONS_FILL_STYLE;
    context.font = ANNOTATIONS_TEXT_SIZE + 'px Helvetica'; 
    
-   for (var angle=0, i=start; angle <= Math.PI; angle += Math.PI/8, i=i-step) {
+   for (var i=start; i>=start-8*step; i=i-step) {
+      var angle = (Math.PI/8) * ((start - i)/step);
       context.beginPath();
       context.fillText(i,
          circle.x + Math.cos(angle) * (radius - TICK_WIDTH*2),
@@ -173,30 +180,68 @@ function keyUp(){
   var c=document.getElementById("canvas");
   var ctx=c.getContext("2d");
 
+  var mm = document.getElementById("mymode");
   switch (code){
+    case 27:
+      if(manualFlg){
+        // alert("Escape pressed!");
+        sendCommand(-1, 0);
+        mm.innerHTML = 'auto';
+        drawDial(circle1, 90, 'Speed');
+        drawDial(circle2, 90, 'Steering Wheel');
+        manualFlg = false;
+      }
+      break;
+    case 32:
+      // alert("Space pressed!");
+      manualFlg = !manualFlg;
+      if(manualFlg)
+        mm.innerHTML = 'manual';
+      else
+        mm.innerHTML = 'auto';
+
+      sendCommand(0, 0);
+      break;
     case 38:
-      // alert("Up pressed!");
-      if(dashboardAngle > 0)
-        dashboardAngle -= 22.5;
-      drawDial(circle1, dashboardAngle, 'Speed');
+      if(manualFlg){
+        // alert("Up pressed!");
+        if(dashboardAngle > 0){
+          dashboardAngle -= 22.5;
+          drawDial(circle1, dashboardAngle, 'Speed');
+          sendCommand(3, speedStart - 2*dashboardAngle / 45);
+        }
+      }
       break;
     case 40:
-      // alert("Down pressed!");
-      if(dashboardAngle < 180)
-        dashboardAngle += 22.5;
-      drawDial(circle1, dashboardAngle, 'Speed');
+      if(manualFlg){
+        // alert("Down pressed!");
+        if(dashboardAngle < 180){
+          dashboardAngle += 22.5;
+          drawDial(circle1, dashboardAngle, 'Speed');
+          sendCommand(4, speedStart - 2*dashboardAngle / 45);
+          //sendCommand(4, speedStart - 8 * speedStep * dashboardAngle / Math.PI );
+        }
+      }
       break;
     case 37:
-      // alert("Left pressed!");
-      if(dashboardAngle < 180)
-        dashboardAngle += 22.5;
-      drawDial(circle2, dashboardAngle, 'Steering Wheel');
+      if(manualFlg){
+        // alert("Left pressed!");
+        if(dashboardAngle > -90){
+          dashboardAngle -= 22.5;
+          drawDial(circle2, 90 - dashboardAngle, 'Steering Wheel');
+          sendCommand(1, dashboardAngle);
+        }
+      }
       break;
     case 39:
-      // alert("Right pressed!");
-      if(dashboardAngle > 0)
-        dashboardAngle -= 22.5;
-      drawDial(circle2, dashboardAngle, 'Steering Wheel');
+      if(manualFlg){
+        // alert("Right pressed!");
+        if(dashboardAngle < 90){
+          dashboardAngle += 22.5;
+          drawDial(circle2, 90 - dashboardAngle, 'Steering Wheel');
+          sendCommand(2, dashboardAngle);
+        }
+      }
       break;
     default:
       break;
@@ -208,11 +253,11 @@ function drawDial(circle, angle, caption) {
    // Speed dail
    if(circle.x == 160){
       context.clearRect(0,0,320,320);
-      drawAnnotations(circle, caption, 4, 1);
+      drawAnnotations(circle, caption, speedStart, speedStep);
     // Steering wheel dail
    }else{
       context.clearRect(320,0,320,320);
-      drawAnnotations(circle, caption, 90, 22.5);
+      drawAnnotations(circle, caption, wheelStart, wheelStep);
     }
 
    // drawGrid(circle, 'lightgray', 10, 10);
@@ -226,7 +271,7 @@ function drawDial(circle, angle, caption) {
 
 }
 
-function sendCommand(command){
+function sendCommand(command, value){
     var xmlHttp; 
      
     // 处理Ajax浏览器兼容
@@ -236,7 +281,13 @@ function sendCommand(command){
         xmlHttp = new XMLHttpRequest();   
     } 
      
-    var url = "control.jsp?cmd=" + command.toString(); // 使用JS中变量tmp    
+    // cmd values:
+    // 0: Mode switch (auto | manual) - blank key
+    // 1: Turn Left                   - Left key
+    // 2: Turn Right                  - Right key
+    // 3: Speed up                    - Up key
+    // 4: Speed down                  - Down key
+    var url = "control.jsp?cmd=" + command.toString() + "&value=" + value.toString(); // 使用JS中变量tmp    
     xmlHttp.open("post",url,true);   //配置XMLHttpRequest对象
       
      // alert("*** url = " + url);
@@ -244,11 +295,14 @@ function sendCommand(command){
     xmlHttp.onreadystatechange = function (){
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
            // var respText = xmlHttp.responseText;
-           alert("Success! cmd = " + command);        }
+           // alert("Success! cmd = " + command);        
+        }else{
+          // alert(xmlHttp.status);
+        }
     }
     xmlHttp.send(null);  // 发送请求
 }
-    
+
 // Initialization....................................................
 context.shadowOffsetX = 2;
 context.shadowOffsetY = 2;
@@ -259,29 +313,6 @@ context.textBaseline = 'middle';
 drawDial(circle1, dashboardAngle, 'Speed');
 drawDial(circle2, dashboardAngle, 'Steering Wheel');
 document.onkeyup=keyUp;
-
-// var loc1 = {x: circle1.x, y: circle1.y};
-// var loc2 = {x: circle2.x, y: circle2.y};
-//    // if(circle.x == 160)
-//    //    context.clearRect(0,0,320,320);
-//    // else
-//    //    context.clearRect(320,0,320,320);
-
-//    drawGrid('lightgray', 10, 10);
-
-//    drawCentroid(circle1);
-//    drawCentroidGuidewire(circle1, loc1, dashboardAngle);
-//    drawRing(circle1);
-//    drawTickInnerCircle(circle1);
-//    drawTicks(circle1);
-//    drawAnnotations(circle1, 'speed');
-
-//    drawCentroid(circle2);
-//    drawCentroidGuidewire(circle2, loc2, dashboardAngle);
-//    drawRing(circle2);
-//    drawTickInnerCircle(circle2);
-//    drawTicks(circle2);
-//    drawAnnotations(circle2, 'steering wheel');
 
 var c=document.getElementById("myCanvas");
 var ctx = c.getContext("2d");

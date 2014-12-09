@@ -206,6 +206,7 @@ function keyUp(){
     case 32:
       // alert("Space pressed!");
       // alert(manualFlg);
+      alert("speed from db = " + speedFromDB);
       if(manualFlg){
         var speedTmp = speed;
         if(speed == 0){
@@ -320,6 +321,100 @@ function sendCommand(command, value){
     }
     xmlHttp.send(null);  // 发送请求
 }
+   
+function createXMLHttpRequest() {  
+    if(window.XMLHttpRequest) { //Mozilla 浏览器  
+        XMLHttpReq = new XMLHttpRequest();  
+    }  
+    else if (window.ActiveXObject) { // IE浏览器  
+        try {  
+            XMLHttpReq = new ActiveXObject("Msxml2.XMLHTTP");  
+        } catch (e) {  
+            try {  
+                XMLHttpReq = new ActiveXObject("Microsoft.XMLHTTP");  
+            } catch (e) {}  
+        }  
+    }  
+}  
+
+function sendRequest() {  
+            createXMLHttpRequest();  
+            var url = "readData.jsp";  
+            XMLHttpReq.open("GET", url, true);  
+            XMLHttpReq.onreadystatechange = processResponse;//指定响应函数  
+            XMLHttpReq.send(null);  // 发送请求  
+        }  
+        // 处理返回信息函数  
+        function processResponse() {  
+            if (XMLHttpReq.readyState == 4) { // 判断对象状态  
+                if (XMLHttpReq.status == 200) { // 信息已经成功返回，开始处理信息 
+                    redraw();  
+                    setTimeout("sendRequest()", 1000);  
+                } else { //页面不正常   
+                    window.alert("Request error!");  
+                }  
+            }  
+        }  
+
+function redraw(){  
+  var speed = 3 * XMLHttpReq.responseXML.getElementsByTagName("speed")[0].firstChild.nodeValue;  
+  var centerOffset = XMLHttpReq.responseXML.getElementsByTagName("centerOffset")[0].firstChild.nodeValue;
+  var passedTriggerNo = XMLHttpReq.responseXML.getElementsByTagName("passedTriggerNo")[0].firstChild.nodeValue; 
+
+// alert("redraw.speed = " + speed);
+  if(x>56 && x <280){
+    // speed = 2;
+    // path 1 (before beacon 1)
+    if(y>498){
+      ctx.clearRect(x-12,y,31,31);
+      ctx.beginPath();
+      ctx.fillStyle="blue";  
+      ctx.arc(x,y,5,0,Math.PI*2,true);
+      ctx.fill();
+      ctx.stroke();
+      ctx.closePath();
+      y -= speed;
+    }else{
+      if(x<275 && y>400){
+        // path 2 (between beacon 1 and 2)
+        ctx.clearRect(x-12,y-12,31,31);
+
+        ctx.beginPath();
+        ctx.fillStyle="blue";  
+        ctx.arc(x,y,5,0,Math.PI*2,true);
+        ctx.fill();
+        ctx.stroke();
+        ctx.closePath();
+        x += speed;
+      }else{
+        if(y>35){
+          // path 3 (between beacon 2 and 3)
+          ctx.clearRect(x-12,y-12,31,31);
+          ctx.beginPath();
+          ctx.fillStyle="blue";  
+          ctx.arc(x,y,5,0,Math.PI*2,true);
+          ctx.fill();
+          ctx.stroke();
+          ctx.closePath();
+          y -= speed;
+        }
+      }
+    }
+
+    if(x>60 && y<=35){
+      // path 4 (between beacon 3 and 4)
+      ctx.clearRect(x-12,y-12,31,31);
+
+      ctx.beginPath();
+      ctx.fillStyle="blue";  
+      ctx.arc(x,y,5,0,Math.PI*2,true);
+      ctx.fill();
+      ctx.stroke();
+      ctx.closePath();
+      x -= speed;
+    }
+  }
+}
 
 // Initialization....................................................
 context.shadowOffsetX = 2;
@@ -403,5 +498,6 @@ var ss = setInterval(
     },
 100);
 
-// var s = "<%=sss%>"; //"" can not be ignored!
-// alert(sss);  
+    // alert("hellojs****stemp = " + stemp);  
+// alert("stemp = " + stemp);  
+// alert("speed = " + speed);  

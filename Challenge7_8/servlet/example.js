@@ -22,11 +22,11 @@ var canvas = document.getElementById('canvas'),
                radius: 60
              };
     dashboardAngle = 90;
-  var manualFlg = false;
   var speedStart = 4;
   var speedStep = 1;
   var wheelStart = 90;
   var wheelStep = 22.5;
+  // var manualFlg = false;
 
 // Functions..........................................................
 function drawGrid(circle, color, stepx, stepy) {
@@ -205,15 +205,18 @@ function keyUp(){
       break;
     case 32:
       // alert("Space pressed!");
-      var speedTmp = speed;
-      if(speed == 0){
-        speed = 2;
-      }else{
-        speed = 0;
+      // alert(manualFlg);
+      if(manualFlg){
+        var speedTmp = speed;
+        if(speed == 0){
+          speed = 2;
+        }else{
+          speed = 0;
+        }
+        dashboardAngle = (speedStart - speed) * 45 / 2;
+        drawDial(circle1, dashboardAngle, 'Speed');
+        sendCommand(4, speed);
       }
-      dashboardAngle = (speedStart - speed) * 45 / 2;
-      drawDial(circle1, dashboardAngle, 'Speed');
-      sendCommand(4, speed);
       break;
     case 38:
       if(manualFlg){
@@ -345,55 +348,57 @@ var speed = 0;
 // var y = 80;
 var ss = setInterval(
     function(){  
-      // speed = 2;
-      // path 1 (before beacon 1)
-      if(y>498){
-        ctx.clearRect(x-16,y,31,31);
-        ctx.beginPath();
-        ctx.fillStyle="blue";  
-        ctx.arc(x,y,10,0,Math.PI*2,true);
-        ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
-        y -= speed;
-      }else{
-        if(x<275 && y>400){
-          // path 2 (between beacon 1 and 2)
-          ctx.clearRect(x-16,y-16,31,31);
-
+      if(x>56 && x <280){
+        // speed = 2;
+        // path 1 (before beacon 1)
+        if(y>498){
+          ctx.clearRect(x-12,y,31,31);
           ctx.beginPath();
           ctx.fillStyle="blue";  
-          ctx.arc(x,y,10,0,Math.PI*2,true);
+          ctx.arc(x,y,5,0,Math.PI*2,true);
           ctx.fill();
           ctx.stroke();
           ctx.closePath();
-          x += speed;
+          y -= speed;
         }else{
-          if(y>35){
-            // path 3 (between beacon 2 and 3)
-            ctx.clearRect(x-16,y-16,31,31);
+          if(x<275 && y>400){
+            // path 2 (between beacon 1 and 2)
+            ctx.clearRect(x-12,y-12,31,31);
+
             ctx.beginPath();
             ctx.fillStyle="blue";  
-            ctx.arc(x,y,10,0,Math.PI*2,true);
+            ctx.arc(x,y,5,0,Math.PI*2,true);
             ctx.fill();
             ctx.stroke();
             ctx.closePath();
-            y -= speed;
+            x += speed;
+          }else{
+            if(y>35){
+              // path 3 (between beacon 2 and 3)
+              ctx.clearRect(x-12,y-12,31,31);
+              ctx.beginPath();
+              ctx.fillStyle="blue";  
+              ctx.arc(x,y,5,0,Math.PI*2,true);
+              ctx.fill();
+              ctx.stroke();
+              ctx.closePath();
+              y -= speed;
+            }
           }
         }
-      }
 
-      if(x>60 && y<=35){
-        // path 4 (between beacon 3 and 4)
-        ctx.clearRect(x-16,y-16,31,31);
+        if(x>60 && y<=35){
+          // path 4 (between beacon 3 and 4)
+          ctx.clearRect(x-12,y-12,31,31);
 
-        ctx.beginPath();
-        ctx.fillStyle="blue";  
-        ctx.arc(x,y,10,0,Math.PI*2,true);
-        ctx.fill();
-        ctx.stroke();
-        ctx.closePath();
-        x -= speed;
+          ctx.beginPath();
+          ctx.fillStyle="blue";  
+          ctx.arc(x,y,5,0,Math.PI*2,true);
+          ctx.fill();
+          ctx.stroke();
+          ctx.closePath();
+          x -= speed;
+        }
       }
     },
 100);

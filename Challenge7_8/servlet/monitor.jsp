@@ -23,7 +23,14 @@
         prop.load(fis);
 
         mode = prop.getProperty("mode");
+        String manualFlg;
+        if(mode.equalsIgnoreCase("auto"))
+            manualFlg = "false";
+        else
+            manualFlg = "true";
 
+        System.out.println("manualFlg = " + manualFlg);
+out.write("<SCRIPT language="+"'"+"JavaScript"+"'"+">var manualFlg="+manualFlg+";</SCRIPT>");
     }catch(Exception e){
         out.print(e);
     }
@@ -73,7 +80,7 @@
             <H1>
                 
                 Current Mode: <font color="red"><span id="mymode"><%=mode%></span></font><br>
-                
+
                 Key Control: <br>
                 <table>
                     <tr><td width="150">Escape:</td><td>Reset (set to auto mode and stop)</td><tr>
